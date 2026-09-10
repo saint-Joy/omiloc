@@ -241,7 +241,7 @@ def test_wizard_preserves_pairing_on_repeat_and_address_edit(monkeypatch, tmp_pa
     from types import SimpleNamespace
     from dev_harness import local_mac
 
-    cfg = SimpleNamespace(layout=SimpleNamespace(state_root=tmp_path), backend_port=20000)
+    cfg = SimpleNamespace(layout=SimpleNamespace(state_root=tmp_path), backend_port=20000, local_transport='ngrok')
     monkeypatch.setattr(sys.stdin, 'isatty', lambda: True)
     monkeypatch.setattr(sys.stdout, 'isatty', lambda: True)
     monkeypatch.setattr(local_mac.cli, '_service_record', lambda *a: None)
@@ -330,5 +330,46 @@ def test_manual_no_speech_is_successful_and_content_free(monkeypatch, capsys):
     monkeypatch.setattr(local_stt, 'transcribe', no_speech)
     assert local_mac.main() == 0
     output = capsys.readouterr()
-    assert output.out.strip() == 'Речь не обнаружена. Аудиозапись сохранена.'
+    assert output.out.strip() == 'No speech detected. The recording is saved.'
     assert not output.err
+
+
+def test_wifi_configure_provisions_key_without_ngrok_prompts(monkeypatch, tmp_path):
+    import io
+    from types import SimpleNamespace
+    from dev_harness import local_mac
+
+    class Tty(io.StringIO):
+        def isatty(self):
+            return True
+
+    output = Tty()
+    monkeypatch.setattr(local_mac.sys, 'stdin', Tty())
+    monkeypatch.setattr(local_mac.sys, 'stdout', output)
+    monkeypatch.setattr('builtins.input', lambda *a: (_ for _ in ()).throw(AssertionError('no prompts on wifi')))
+    monkeypatch.setattr(local_mac.getpass, 'getpass', lambda *a: (_ for _ in ()).throw(AssertionError('no prompts on wifi')))
+    monkeypatch.setattr(local_mac.cli, '_service_record', lambda *a: None)
+    monkeypatch.setattr(local_mac.secrets, 'token_urlsafe', lambda _: 'w' * 43)
+    cfg = SimpleNamespace(layout=SimpleNamespace(state_root=tmp_path), backend_port=20000, local_transport='wifi')
+    local_mac.configure(cfg)
+    saved = (tmp_path / 'pairing.json').read_bytes()
+    assert b'w' * 43 not in saved
+    assert 'w' * 43 in output.getvalue()
+    assert 'Address: http://' in output.getvalue()
+    output.seek(0)
+    output.truncate()
+    local_mac.configure(cfg)
+    assert (tmp_path / 'pairing.json').read_bytes() == saved
+    assert 'w' * 43 not in output.getvalue()
+    import pytest as _pytest
+    with _pytest.raises(local_mac.LocalMacError):
+        local_mac.configure(cfg, edit=True)
+
+
+def test_wifi_lan_address_is_private_http(monkeypatch):
+    from types import SimpleNamespace
+    from dev_harness import local_mac
+
+    cfg = SimpleNamespace(backend_port=20000)
+    address = local_mac.lan_address(cfg)
+    assert address.startswith('http://') and address.endswith(':20000')

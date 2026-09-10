@@ -66,6 +66,21 @@ def pairing_data(key: str) -> dict:
     return {"version": 1, "owner_uid": "alice", "key_sha256": hashlib.sha256(key.encode()).hexdigest()}
 
 
+def lan_address(cfg) -> str:
+    """Best-effort LAN URL for display; UDP getsockname sends no packets."""
+    import socket
+
+    probe = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        probe.connect(("192.0.2.1", 9))
+        host = probe.getsockname()[0]
+    except OSError:
+        host = "127.0.0.1"
+    finally:
+        probe.close()
+    return f"http://{host}:{cfg.backend_port}"
+
+
 def ngrok_port(cfg) -> int:
     # Follow the harness's existing port offset, without another public listener.
     return 4040 + cfg.backend_port - config.BACKEND_PORT
@@ -80,20 +95,43 @@ def read_config(cfg) -> dict:
     return data
 
 
+def configure_wifi(cfg, *, rotate: bool = False, edit: bool = False) -> None:
+    from .local_setup import show_frame
+
+    if edit:
+        raise LocalMacError("Wi-Fi transport has no connection settings; rotate-key replaces the key")
+    pairing = cfg.layout.state_root / "pairing.json"
+    if pairing.exists() and not rotate:
+        show_frame('FOR THE PHONE APP', ['Address: ' + lan_address(cfg),
+                   'Key: unchanged, saved in the app'])
+        return
+    if cli._service_record(cfg, "backend"):
+        raise LocalMacError("Stop this local stack before replacing its pairing key")
+    key = secrets.token_urlsafe(32)
+    private_json(pairing, pairing_data(key))
+    # Deliberate one-time terminal provisioning. Never written to files or logs.
+    show_frame('FOR THE PHONE APP', ['Address: ' + lan_address(cfg), 'Key:  ' + key])
+    print('Open "Local Mac" in the phone app on the same Wi-Fi; it finds this Mac on its own. Enter the key there.')
+    print('The key is shown once. The Mac stores only its verification hash.')
+
+
 def configure(cfg, *, rotate: bool = False, edit: bool = False) -> None:
     from .local_setup import show_frame
 
     if not sys.stdin.isatty() or not sys.stdout.isatty():
         raise LocalMacError("Configure requires a local interactive terminal; credentials must not enter logs")
+    if cfg.local_transport == "wifi":
+        configure_wifi(cfg, rotate=rotate, edit=edit)
+        return
     current = cfg.layout.state_root / "ngrok.json"
     if edit and (cli._service_record(cfg, "backend") or cli._service_record(cfg, "ngrok")):
         raise LocalMacError("Stop this local stack before changing its connection")
     if not current.exists() or edit:
         existing = read_config(cfg)["url"] if current.exists() else ""
-        print('Ngrok: https://dashboard.ngrok.com — адрес в Domains, токен в Your Authtoken.')
-        print('Если аккаунта ещё нет: docs/NGROK.md')
-        url = endpoint(input(f"HTTPS-адрес ngrok [{existing}]: ").strip() or existing)
-        token = getpass.getpass("Authtoken ngrok (скрыт; Enter — использовать сохранённый): ").strip()
+        print('Ngrok: https://dashboard.ngrok.com — the address is under Domains, the token under Your Authtoken.')
+        print('No account yet: docs/NGROK.md')
+        url = endpoint(input(f"ngrok HTTPS address [{existing}]: ").strip() or existing)
+        token = getpass.getpass("ngrok authtoken (hidden; Enter keeps the saved one): ").strip()
         if not token:
             import yaml
 
@@ -121,17 +159,17 @@ def configure(cfg, *, rotate: bool = False, edit: bool = False) -> None:
         private_json(current, {"url": url})
     pairing = cfg.layout.state_root / "pairing.json"
     if pairing.exists() and not rotate:
-        show_frame('ДЛЯ ПРИЛОЖЕНИЯ НА IPHONE', ['Домен: ' + read_config(cfg)['url'],
-                   'Ключ: прежний, сохранённый в приложении'])
+        show_frame('FOR THE PHONE APP', ['Domain: ' + read_config(cfg)['url'],
+                   'Key: unchanged, saved in the app'])
         return
     if cli._service_record(cfg, "backend") or cli._service_record(cfg, "ngrok"):
         raise LocalMacError("Stop this local stack before replacing its pairing key")
     key = secrets.token_urlsafe(32)
     private_json(pairing, pairing_data(key))
     # Deliberate one-time terminal provisioning. Never written to files or logs.
-    show_frame('ДЛЯ ПРИЛОЖЕНИЯ НА IPHONE', ['Домен: ' + read_config(cfg)['url'], 'Ключ:  ' + key])
-    print('Введите домен и ключ в разделе «Локальный Mac» на iPhone.')
-    print('Ключ показан один раз. На Mac хранится только его проверочный хеш.')
+    show_frame('FOR THE PHONE APP', ['Domain: ' + read_config(cfg)['url'], 'Key:  ' + key])
+    print('Enter the domain and the key under "Local Mac" in the phone app.')
+    print('The key is shown once. The Mac stores only its verification hash.')
 
 
 def prepare_emulator(repo: Path) -> None:
@@ -184,8 +222,8 @@ def check_agent(cfg) -> None:
 
 def ensure_owner_profile(cfg, owner_uid: str) -> None:
     """Check live emulator state, creating only a missing paired-owner profile."""
-    if cfg.local_transport != "ngrok" or cfg.provider_mode != "offline" or cfg.dev_bind_host != "127.0.0.1":
-        raise LocalMacError("Owner profile preparation requires the loopback ngrok stack")
+    if cfg.local_transport not in {"ngrok", "wifi"} or cfg.provider_mode != "offline" or cfg.dev_bind_host != "127.0.0.1":
+        raise LocalMacError("Owner profile preparation requires the loopback local stack")
     if not re.fullmatch(r"[A-Za-z0-9_-]{1,128}", owner_uid):
         raise LocalMacError("Invalid local owner")
     collection = f"http://{cfg.firestore_host}/v1/projects/{cfg.project_id}/databases/{cfg.database_id}/documents/users"
@@ -221,7 +259,38 @@ def ensure_owner_profile(cfg, owner_uid: str) -> None:
     print("Local owner profile restored; existing data and pairing preserved")
 
 
+def up_wifi(cfg) -> int:
+    sys.path.insert(0, str(cfg.repo_root / "backend"))
+    from utils.local_transport_auth import load_pairing
+
+    os.environ["OMI_LOCAL_PAIRING_FILE"] = str(cfg.layout.state_root / "pairing.json")
+    pairing = load_pairing()
+    if cli.cmd_check(argparse.Namespace()):
+        return 1
+    if cli.cmd_up(argparse.Namespace()):
+        return 1
+    ensure_owner_profile(cfg, pairing["owner_uid"])
+    # Require actual readiness, not a process declaration.
+    with urllib.request.urlopen(cfg.backend_url + "/v1/health", timeout=5) as response:
+        if response.status != 200:
+            raise LocalMacError("Backend is not ready")
+    require_auth_boundary(cfg.backend_url)
+    cli._start_process(
+        cfg,
+        "bonjour",
+        ["dns-sd", "-R", "omiloc", "_omiloc._tcp", "local", str(cfg.backend_port), "ver=1"],
+        cwd=cfg.repo_root,
+        log_name="bonjour.log",
+        port=0,
+    )
+    print("Wi-Fi transport ready; the network sees only the key-gated backend")
+    local_stt_watch.start_if_enabled(cfg)
+    return 0
+
+
 def up(cfg) -> int:
+    if cfg.local_transport == "wifi":
+        return up_wifi(cfg)
     data = read_config(cfg)
     check_agent(cfg)
     sys.path.insert(0, str(cfg.repo_root / "backend"))
@@ -321,7 +390,7 @@ def main() -> int:
             return 0
         cfg = config.load_config(repo, create_layout=args.command in {"configure", "edit-connection", "rotate-key"})
         if args.command == "check":
-            if not shutil.which("ngrok"):
+            if cfg.local_transport == "ngrok" and not shutil.which("ngrok"):
                 raise LocalMacError("ngrok is missing; run install")
             return cli.cmd_check(argparse.Namespace())
         if args.command in {"configure", "edit-connection", "rotate-key"}:
@@ -338,7 +407,7 @@ def main() -> int:
             try:
                 if args.command == "setup-check":
                     local_setup.check(cfg)
-                    print('Готовность Mac: проверено. Изменений не внесено.')
+                    print('Mac readiness: verified. Nothing changed.')
                     return 0
                 return local_setup.run(cfg)
             except local_setup.SetupError as error:
@@ -364,7 +433,7 @@ def main() -> int:
                 env = {
                     **os.environ,
                     "OMI_AUDIO_ACCESS_KEY_FD": str(read_fd),
-                    "OMI_AUDIO_BASE_URL": read_config(cfg)["url"],
+                    "OMI_AUDIO_BASE_URL": lan_address(cfg) if cfg.local_transport == "wifi" else read_config(cfg)["url"],
                 }
                 return subprocess.run(
                     ["bash", "scripts/dev-harness/audio-capture-smoke.sh"], env=env, pass_fds=(read_fd,)
@@ -373,7 +442,7 @@ def main() -> int:
                 os.close(read_fd)
         return 0
     except local_stt.NoSpeechDetected:
-        print('Речь не обнаружена. Аудиозапись сохранена.')
+        print('No speech detected. The recording is saved.')
         return 0
     except (ValueError, TypeError, OSError, KeyError, safety.SafetyError, subprocess.SubprocessError) as error:
         # Error text from external tools can contain credentials or account IDs.

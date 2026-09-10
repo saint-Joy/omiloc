@@ -180,6 +180,9 @@ def _service_health(cfg: config.HarnessConfig, service: str) -> tuple[bool, str]
         from .local_stt_watch import worker_ready
         ready = worker_ready(cfg)
         return ready, "worker lock held" if ready else "worker not running"
+    if service == "bonjour":
+        # dns-sd exposes no listener; a live owned process is the health signal.
+        return _service_record(cfg, service) is not None, "bonjour advertiser process"
     if service == "redis":
         if _port_open("127.0.0.1", cfg.redis_port):
             return True, "port-open"
@@ -855,7 +858,7 @@ def _start_app_services(cfg: config.HarnessConfig) -> None:
     _start_process(
         cfg,
         "backend",
-        [sys.executable, "-m", "uvicorn", "main:app", "--host", cfg.dev_bind_host, "--port", str(cfg.backend_port),
+        [sys.executable, "-m", "uvicorn", "main:app", "--host", cfg.backend_bind_host, "--port", str(cfg.backend_port),
          *(["--no-access-log", "--log-level", "warning"] if cfg.local_transport == "ngrok" else [])],
         cwd=cfg.repo_root / "backend",
         log_name="backend.log",

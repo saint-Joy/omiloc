@@ -1,4 +1,4 @@
-"""Single-owner credentials for the explicit local ngrok transport.
+"""Single-owner credentials for the explicit local transports (ngrok, wifi).
 
 Only the random key's SHA-256 is persisted. The pairing file is reread for each
 new request, so replacing it revokes the previous key without a code change.
@@ -25,9 +25,9 @@ class LocalTransportAuthError(ValueError):
 
 def local_tunnel_enabled() -> bool:
     mode = os.environ.get("OMI_LOCAL_TRANSPORT", "lan")
-    if mode not in {"lan", "ngrok"}:
+    if mode not in {"lan", "ngrok", "wifi"}:
         raise LocalTransportAuthError("Invalid local transport configuration")
-    return mode == "ngrok"
+    return mode in {"ngrok", "wifi"}
 
 
 def load_pairing() -> dict[str, str]:

@@ -152,6 +152,12 @@ class HarnessConfig:
         return f"redis://{self.redis_host}:{self.redis_port}/0?omi_instance={self.instance}"
 
     @property
+    def backend_bind_host(self) -> str:
+        # Wi-Fi transport exposes only the key-gated backend to the network;
+        # every other harness service stays on loopback.
+        return "0.0.0.0" if self.local_transport == "wifi" else self.dev_bind_host
+
+    @property
     def backend_url(self) -> str:
         return f"http://{self.backend_host}"
 
@@ -333,10 +339,10 @@ def load_config(repo_root: Path, env: Mapping[str, str] | None = None, *, create
     ports = harness_ports_from_env(source)
     dev_bind_host = dev_bind_host_from_env(source)
     local_transport = source.get("OMI_LOCAL_TRANSPORT", "lan")
-    if local_transport not in {"lan", "ngrok"}:
+    if local_transport not in {"lan", "ngrok", "wifi"}:
         raise safety.SafetyError("Invalid local transport")
-    if local_transport == "ngrok" and (provider_mode != "offline" or dev_bind_host != "127.0.0.1"):
-        raise safety.SafetyError("ngrok requires offline providers and loopback binding")
+    if local_transport in {"ngrok", "wifi"} and (provider_mode != "offline" or dev_bind_host != "127.0.0.1"):
+        raise safety.SafetyError(f"{local_transport} transport requires offline providers and loopback binding")
     cfg = HarnessConfig(
         repo_root=repo_root.resolve(),
         instance=instance,
@@ -370,8 +376,8 @@ def load_config(repo_root: Path, env: Mapping[str, str] | None = None, *, create
             dev_bind_host=cfg.dev_bind_host,
             local_transport=cfg.local_transport,
         )
-    if cfg.local_transport == "ngrok" and cfg.provider_mode != "offline":
-        raise safety.SafetyError("ngrok requires offline providers after loading environment files")
+    if cfg.local_transport in {"ngrok", "wifi"} and cfg.provider_mode != "offline":
+        raise safety.SafetyError(f"{cfg.local_transport} transport requires offline providers after loading environment files")
     safety.validate_harness_runtime_config(
         project_id=cfg.project_id,
         database_id=cfg.database_id,
@@ -412,7 +418,7 @@ def _harness_service_extra(cfg: HarnessConfig) -> dict[str, str]:
     if cfg.provider_mode == "offline":
         extra["OMI_OFFLINE_ALLOWED_ENDPOINTS"] = f"{cfg.dev_bind_host}:{cfg.backend_port}"
     extra["OMI_LOCAL_TRANSPORT"] = cfg.local_transport
-    if cfg.local_transport == "ngrok":
+    if cfg.local_transport in {"ngrok", "wifi"}:
         extra["OMI_LOCAL_PAIRING_FILE"] = str(cfg.layout.state_root / "pairing.json")
         extra["ADMIN_KEY_AUTH_ENABLED"] = "false"
     if cfg.provider_mode != "offline":

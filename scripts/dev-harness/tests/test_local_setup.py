@@ -24,13 +24,13 @@ def test_start_stops_at_first_failed_precondition(monkeypatch):
     monkeypatch.setattr(local_setup.config, 'load_config', lambda *a, **k: events.append('configure'))
     monkeypatch.setattr(local_mac, 'up', lambda *_: events.append('up'))
     with pytest.raises(local_setup.SetupError, match='preflight failed'):
-        local_setup.run(SimpleNamespace(repo_root=Path('.')))
+        local_setup.run(SimpleNamespace(repo_root=Path('.'), local_transport='ngrok'))
     assert events == []
 
 
 def test_start_uses_existing_lifecycle_and_prints_short_result(monkeypatch):
     output, events = Terminal(), []
-    cfg = SimpleNamespace(repo_root=Path('.'), backend_port=20000)
+    cfg = SimpleNamespace(repo_root=Path('.'), backend_port=20000, local_transport='ngrok')
     monkeypatch.setattr(local_setup.sys, 'stdin', Terminal())
     monkeypatch.setattr(local_setup.sys, 'stdout', output)
     monkeypatch.setattr(local_setup, 'check', lambda _: events.append('check'))
@@ -44,16 +44,16 @@ def test_start_uses_existing_lifecycle_and_prints_short_result(monkeypatch):
     assert local_setup.run(cfg) == 0
     assert events == ['check', 'install', 'configure', 'up', 'library', 'open']
     assert 'http://127.0.0.1:20001' in output.getvalue()
-    assert '┌' in output.getvalue() and 'Терминал можно закрыть' in output.getvalue()
+    assert '┌' in output.getvalue() and 'close this terminal' in output.getvalue()
     assert '│  omiloc' in output.getvalue()
-    assert 'Приложение на iPhone: docs/LOCAL_SETUP.md' in output.getvalue()
+    assert 'Phone app: docs/LOCAL_SETUP.md' in output.getvalue()
     assert len(output.getvalue().splitlines()) < 20
 
 
 def test_start_refuses_noninteractive_secret_output(monkeypatch):
     monkeypatch.setattr(local_setup.sys, 'stdin', io.StringIO())
     with pytest.raises(local_setup.SetupError, match='Terminal'):
-        local_setup.run(SimpleNamespace())
+        local_setup.run(SimpleNamespace(local_transport='ngrok'))
 
 
 def test_first_pairing_shows_box_once_and_repeat_preserves_hash(monkeypatch, tmp_path):
@@ -64,7 +64,7 @@ def test_first_pairing_shows_box_once_and_repeat_preserves_hash(monkeypatch, tmp
     monkeypatch.setattr(local_mac.getpass, 'getpass', lambda _: 'synthetic-agent-token-123456')
     monkeypatch.setattr(local_mac.cli, '_service_record', lambda *a: None)
     monkeypatch.setattr(local_mac.secrets, 'token_urlsafe', lambda _: 'x' * 43)
-    cfg = SimpleNamespace(layout=SimpleNamespace(state_root=tmp_path), backend_port=20000)
+    cfg = SimpleNamespace(layout=SimpleNamespace(state_root=tmp_path), backend_port=20000, local_transport='ngrok')
     local_mac.configure(cfg)
     saved = (tmp_path / 'pairing.json').read_bytes()
     assert '┌' in output.getvalue() and 'x' * 43 in output.getvalue()
@@ -74,7 +74,7 @@ def test_first_pairing_shows_box_once_and_repeat_preserves_hash(monkeypatch, tmp
     local_mac.configure(cfg)
     assert (tmp_path / 'pairing.json').read_bytes() == saved
     assert 'x' * 43 not in output.getvalue()
-    assert 'Домен: https://example.ngrok.app' in output.getvalue()
+    assert 'Domain: https://example.ngrok.app' in output.getvalue()
 
 
 @pytest.mark.parametrize('system, architecture, translated, accepted, reexec', [
