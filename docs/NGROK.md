@@ -1,60 +1,67 @@
-# Подключение iPhone к Mac
+# Pairing the phone with the Mac
 
-Ngrok даёт Mac постоянный HTTPS-адрес, доступный телефону в том числе через
-мобильную сеть. Аудио проходит через ngrok и сохраняется на Mac.
-Веб-аудиотека открывается отдельно и доступна только на самом Mac.
+By default the phone talks to the Mac over the shared Wi-Fi network:
+the Mac advertises itself via Bonjour, the app finds it, and only the
+pairing key is entered by hand. No accounts, no tunnels; audio never
+leaves your network. This page covers connection checks and the optional
+ngrok transport for recording away from home.
 
-## Настройка
+## Wi-Fi (default)
 
-1. [Создайте аккаунт ngrok](https://dashboard.ngrok.com/signup) и завершите
-   подтверждение аккаунта по его запросам.
-2. В [Domains](https://dashboard.ngrok.com/domains) возьмите выданный аккаунту
-   **dev domain**. Покупать домен не нужно: бесплатный план включает один такой адрес.
-   Используйте именно его — произвольное имя на бесплатном плане не подойдёт.
-3. Откройте [Your Authtoken](https://dashboard.ngrok.com/get-started/your-authtoken)
-   и скопируйте только значение токена, без команды. API Key здесь не используется.
-4. Запустите `start.command`: он установит ngrok и попросит HTTPS-адрес
-   вида `https://ваш-домен.ngrok-free.app` и authtoken. Используйте домен и токен
-   одного аккаунта; токен вводится скрыто. На новом Mac введите его обязательно.
-5. В приложении на iPhone откройте «Локальный Mac», введите домен и ключ из рамки
-   в Terminal, затем проверьте подключение.
+1. Run `start.command`. The framed box shows the LAN address and the
+   pairing key (shown once — save it).
+2. In the phone app, open "Local Mac", pick the discovered Mac (or enter
+   the shown address), and enter the key.
 
-Ключ приложения создаётся скриптом и отличается от authtoken ngrok.
-Он показывается один раз. Повторный запуск сохраняет его и записи.
-Не передавайте ключ и authtoken другим людям.
-Бесплатный план имеет [лимиты трафика и запросов](https://ngrok.com/docs/pricing-limits/free-plan-limits);
-при их исчерпании передача может остановиться до сброса лимита или смены плана.
+## If there is no connection
 
-Для проверки записи подключите CV1, нажмите кнопку CV1 один раз, произнесите
-несколько фраз и нажмите её ещё раз. Откройте `omiloc` на Mac
-и прослушайте файл. Мьют не завершает запись.
+- Make sure the Mac is on, awake, and `start.command` is running.
+- The phone and the Mac must be on the same network; guest Wi-Fi and
+  client isolation break discovery.
+- Check the key under "Local Mac" on the phone.
+- Open `http://<address>/v1/health`: `{"status":"ok"}` means the server
+  is reachable. The key is verified separately by the button in the app.
+- Service checks from the project folder: `bash scripts/local-mac.sh status`,
+  more detail with `bash scripts/local-mac.sh check`.
 
-## Если соединения нет
+## Optional: ngrok for remote access
 
-- Убедитесь, что Mac включён, не спит и на нём запущен `start.command`.
-- Проверьте домен и ключ в «Локальный Mac» на iPhone.
-- Откройте `https://<ваш-адрес>/v1/health`: ответ `{"status":"ok"}` означает,
-  что сервер доступен. Ключ проверяется отдельно кнопкой в приложении.
-- Для проверки сервисов выполните `bash scripts/local-mac.sh status` из папки проекта.
-  Более подробная проверка — `bash scripts/local-mac.sh check`.
+Ngrok gives the Mac a permanent HTTPS address reachable from mobile
+networks. Audio passes through ngrok; storage stays on the Mac.
 
-## Смена настроек
+1. [Create an ngrok account](https://dashboard.ngrok.com/signup) and
+   finish its verification steps.
+2. Under [Domains](https://dashboard.ngrok.com/domains), take the **dev
+   domain** the account assigns. The free plan includes exactly one such
+   address; custom names need a paid plan.
+3. Open [Your Authtoken](https://dashboard.ngrok.com/get-started/your-authtoken)
+   and copy the token value only.
+4. Start with `OMI_LOCAL_TRANSPORT=ngrok ./start.command`: it asks for
+   the HTTPS address (`https://your-domain.ngrok-free.app`) and the
+   authtoken. Use the domain and token of one account.
+5. On the phone, enter the domain and the pairing key under "Local Mac".
 
-Сначала остановите сервисы. Все команды выполняются из папки проекта:
+The pairing key differs from the ngrok authtoken. Do not share either.
+The free plan has [traffic and request limits](https://ngrok.com/docs/pricing-limits/free-plan-limits);
+when exhausted, transfer stops until the limit resets or the plan changes.
+
+## Changing settings
+
+Stop the services first. From the project folder:
 
 ```bash
 bash scripts/local-mac.sh down
-bash scripts/local-mac.sh edit-connection
+bash scripts/local-mac.sh edit-connection   # ngrok transport only
 ./start.command
 ```
 
-`edit-connection` меняет адрес или authtoken, сохраняя ключ приложения.
-После смены адреса обновите его на iPhone; переустанавливать приложение не нужно.
-Для замены потерянного ключа используйте `rotate-key` вместо `edit-connection`.
-Новый ключ нужно ввести на телефоне.
+`edit-connection` changes the ngrok address or authtoken, keeping the
+pairing key. After changing the address, update it on the phone; no app
+reinstall is needed. For a lost key use `rotate-key` instead, and enter
+the new key on the phone.
 
-Отдельные команды для ручной установки и запуска: `bash scripts/local-mac.sh install`,
-затем `configure` и `up`. Для обычной работы достаточно [start.command](START.md).
+Separate commands for manual install and start: `bash scripts/local-mac.sh install`,
+then `configure` and `up`. For normal use, [start.command](START.md) is enough.
 
-[Распознавание записей](LOCAL_STT.md) · [Установка приложения](LOCAL_SETUP.md) ·
-[Технические проверки](DEVELOPMENT.md).
+[Transcription](LOCAL_STT.md) · [Phone app install](LOCAL_SETUP.md) ·
+[Technical checks](DEVELOPMENT.md)

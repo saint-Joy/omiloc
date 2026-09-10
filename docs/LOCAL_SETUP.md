@@ -1,79 +1,89 @@
-# Приложение на iPhone
+# Phone app
 
-Для записи нужен отдельно установленный локальный вариант Omi.
-`start.command` готовит сервисы на Mac, но не устанавливает приложение на телефон.
-После установки подключите его по [инструкции ngrok](NGROK.md).
+Recording needs the local Omi variant installed separately.
+`start.command` prepares the Mac services but does not install the phone
+app. After installing, pair it via the [pairing guide](NGROK.md).
+An Android build is being prepared; the steps below cover iPhone.
 
-## Подготовка Mac
+## Preparing the Mac
 
-Нужны Mac с Apple Silicon, Xcode, Flutter, CocoaPods и свой Apple Account.
-Привязки к модели iPhone или поколению M-процессора нет. В проекте указан минимум
-iOS 15.0; Xcode должен поддерживать версию iOS телефона и работать на вашей macOS.
+You need an Apple Silicon Mac, Xcode, Flutter, CocoaPods, and your own
+Apple Account. There is no tie to an iPhone model or M-processor
+generation. The project sets iOS 15.0 as the minimum; Xcode must support
+the phone's iOS version and run on your macOS.
 
-1. Установите Xcode из App Store, откройте его, примите лицензию и дождитесь
-   установки компонентов iOS. В **Settings → Locations → Command Line Tools**
-   выберите установленный Xcode.
-2. Установите [Flutter для iOS](https://docs.flutter.dev/platform-integration/ios/setup)
-   и добавьте его в PATH по инструкции. Нужна версия не ниже 3.44.5.
-3. После подготовки Homebrew через `start.command` установите
-   [CocoaPods](https://formulae.brew.sh/formula/cocoapods): `brew install cocoapods`.
-   Проверьте `flutter doctor -v`: раздел Xcode должен быть без ошибок;
-   Android для этой установки не нужен.
+1. Install Xcode from the App Store, open it, accept the license, and
+   wait for the iOS components. Under **Settings → Locations → Command
+   Line Tools**, pick the installed Xcode.
+2. Install [Flutter for iOS](https://docs.flutter.dev/platform-integration/ios/setup)
+   and add it to PATH per the instructions. Version 3.44.5 or newer.
+3. After Homebrew is prepared by `start.command`, install
+   [CocoaPods](https://formulae.brew.sh/formula/cocoapods):
+   `brew install cocoapods`. Check `flutter doctor -v`: the Xcode section
+   must be error-free; Android is not needed for this install.
 
-## Подпись и телефон
+## Signing and the phone
 
-Для установки на свой iPhone достаточно бесплатной **Personal Team**.
-Её профиль действует 7 дней: затем приложение нужно заново подписать и установить.
-Это [ограничение Apple](https://developer.apple.com/help/account/basics/about-your-developer-account).
+The free **Personal Team** is enough to install on your own iPhone.
+Its profile lasts 7 days: after that the app must be re-signed and
+reinstalled. This is an
+[Apple restriction](https://developer.apple.com/help/account/basics/about-your-developer-account).
 
-1. В Xcode откройте **Settings → Accounts**, добавьте свой Apple Account
-   и выберите Personal Team.
-2. Откройте **Manage Certificates → + → Apple Development**. Xcode создаст
-   сертификат и закрытый ключ на этом Mac; вручную выпускать CSR не требуется.
-   Если сертификат уже есть с рабочим закрытым ключом, повторно создавать его не нужно.
-   [Инструкция Apple](https://developer.apple.com/documentation/Xcode/sharing-your-teams-signing-certificates).
-3. В «Связке ключей» откройте **Мои сертификаты → Apple Development**.
-   Под сертификатом должен быть закрытый ключ. Team ID — это 10 символов
-   в **Subject Name → Organizational Unit (OU)** в свойствах сертификата.
-   Номер в скобках в названии может отличаться —
-   [Apple объясняет разницу](https://developer.apple.com/forums/thread/811970).
-4. Подключите разблокированный iPhone USB-кабелем для передачи данных и подтвердите
-   доверие Mac. В Xcode откройте **Window → Devices and Simulators** и дождитесь
-   готовности телефона. На iPhone включите **Настройки → Конфиденциальность
-   и безопасность → Режим разработчика**, перезагрузите его и подтвердите включение.
+1. In Xcode open **Settings → Accounts**, add your Apple Account, and
+   select the Personal Team.
+2. Open **Manage Certificates → + → Apple Development**. Xcode creates
+   the certificate and the private key on this Mac; no manual CSR is
+   needed. If a certificate with a working private key already exists,
+   do not create another.
+   [Apple's guide](https://developer.apple.com/documentation/Xcode/sharing-your-teams-signing-certificates).
+3. In Keychain Access open **My Certificates → Apple Development**.
+   The private key must sit under the certificate. The Team ID is the
+   10 characters in **Subject Name → Organizational Unit (OU)** in the
+   certificate properties. The number in parentheses in the name can
+   differ — [Apple explains the difference](https://developer.apple.com/forums/thread/811970).
+4. Connect the unlocked iPhone with a data USB cable and confirm trust
+   for the Mac. In Xcode open **Window → Devices and Simulators** and
+   wait for the phone. On the iPhone enable **Settings → Privacy &
+   Security → Developer Mode**, reboot it, and confirm.
 
-## Установка
+## Install
 
-[Скачайте проект и подготовьте сервисы Mac](START.md#установка). Из папки проекта:
+[Fetch the project and prepare the Mac services](START.md#install).
+From the project folder:
 
 ```bash
 cd app
 bash setup.sh ios personal
 ```
 
-Скрипт проверит Xcode и iOS SDK, Flutter, CocoaPods, сертификат с закрытым ключом
-и доступность телефона. Team ID вводится скрыто по запросу. Если чего-то не хватает,
-появится подсказка: исправьте причину и нажмите Enter для повторной проверки;
-`q` завершит подготовку. Установка начнётся только после успешных проверок.
+The script checks Xcode with the iOS SDK, Flutter, CocoaPods, the
+certificate with its private key, and phone availability. The Team ID is
+entered hidden on request. If something is missing, a hint appears: fix
+the cause and press Enter to recheck; `q` quits. The install starts only
+after all checks pass.
 
-Для проверки без сборки и установки: `./start.command --iphone-check` из корня проекта.
-В этом режиме также можно исправлять проблемы и повторять проверку.
-Доступ Apple Account к выпуску профиля окончательно проверяется Xcode при подписи;
-наличие сертификата не гарантирует, что вход в аккаунт ещё действует.
+To check without building or installing: `./start.command --iphone-check`
+from the project root. That mode also lets you fix problems and recheck.
+Apple Account access for profile issuance is finally verified by Xcode at
+signing time; a certificate alone does not guarantee the account login is
+still valid.
 
-После проверок скрипт подготавливает зависимости, собирает, устанавливает и запускает приложение.
-Если macOS запросит доступ к ключу подписи, разрешите его, введя пароль Mac.
-При сообщении о недоверенном разработчике на iPhone откройте **Настройки → Основные
-→ VPN и управление устройством** и подтвердите доверие своему разработчику.
+After the checks the script prepares dependencies, builds, installs, and
+launches the app. If macOS asks for access to the signing key, allow it
+with your Mac password. On an "untrusted developer" message, open
+**Settings → General → VPN & Device Management** on the iPhone and trust
+your developer profile.
 
-Телефон выбирается из подключённых устройств. Если их несколько, скрипт предложит
-выбор; для запуска без диалога есть `OMI_IOS_DEVICE_ID`. Если Xcode сообщает,
-что идентификатор занят, задайте свой `OMI_PERSONAL_BUNDLE_ID`. Домен и ключ вводятся
-в приложении после установки.
-Старые `.local`, `.venv`, `build`, ключи и настройки подписи переносить не нужно.
+The phone is picked from connected devices. With several, the script
+offers a choice; `OMI_IOS_DEVICE_ID` skips the dialog. If Xcode reports
+the identifier as taken, set your own `OMI_PERSONAL_BUNDLE_ID`. The
+address and the key are entered in the app after installation.
+Old `.local`, `.venv`, `build`, keys, and signing settings need no
+migration.
 
-Физически проверены iPhone 17 Pro с iOS 26.6, Xcode 26.6, Flutter 3.44.5
-и CocoaPods 1.16.2. Полный повтор установки на чистом Mac ещё не проверен.
+Physically verified: iPhone 17 Pro with iOS 26.6, Xcode 26.6,
+Flutter 3.44.5, CocoaPods 1.16.2. A full repeat install on a clean Mac is
+not yet verified.
 
-[Повторная установка и проверка сборки](DEVELOPMENT.md#сборка-iphone) ·
-[Запуск и запись с CV1](START.md).
+[Reinstall and build verification](DEVELOPMENT.md#iphone-build) ·
+[Running and CV1 recording](START.md)

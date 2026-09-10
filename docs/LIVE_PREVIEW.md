@@ -1,34 +1,38 @@
-# Пробный live preview на Mac
+# Experimental live preview on the Mac
 
-Существующее приложение принимает JSON-массив сегментов по `/v4/listen`.
-Один `id` на live-сессию позволяет заменять весь черновой текст, включая
-исправления и сокращения, без дублей. Изменения только на Mac не требуют сборки
-iOS. На главном экране восстановлен исходный интерфейс Omi; текст открывается
-нажатием карточки записи. Временной кнопки «Транскрипт» нет.
+The existing app accepts a JSON array of segments on `/v4/listen`. One
+`id` per live session lets the whole draft text be replaced, including
+corrections and contractions, without duplicates. Mac-only changes need
+no iOS build. The home screen keeps the original Omi interface; the text
+opens by tapping the recording card. There is no temporary "Transcript"
+button.
 
-CV1 передаёт Opus; backend декодирует его в PCM16 little-endian, mono, 16 kHz.
-Телефонный микрофон передаёт PCM16. Копия PCM уходит по локальному WebSocket
-`/asr`, WAV сохраняется прежним обработчиком. Live-текст остаётся в памяти;
-готовый WAV по-прежнему обрабатывает выбранный финальный WhisperKit.
-Текущий пробный ASR — Core ML Parakeet TDT v3 INT8 через FluidAudio.
-Новые токены каждого окна добавляются к накопленному тексту, а приложение
-получает весь обновлённый черновик с прежним ID сегмента. Низкая уверенность
-нового окна не стирает предыдущие фразы. Этот текст не заменяет финальную
-расшифровку WhisperKit.
+The CV1 sends Opus; the backend decodes it to PCM16 little-endian, mono,
+16 kHz. The phone microphone sends PCM16. A copy of the PCM goes over
+the local WebSocket `/asr`; the WAV is saved by the existing handler.
+Live text stays in memory; the finished WAV is still processed by the
+selected final WhisperKit. The current experimental ASR is Core ML
+Parakeet TDT v3 INT8 via FluidAudio. New tokens of each window are
+appended to the accumulated text, and the app receives the whole updated
+draft under the same segment ID. Low confidence in a new window does not
+erase earlier phrases. This text does not replace the final WhisperKit
+transcript.
 
-## Подготовленное окружение
+## Prepared environment
 
-Нужны установленные FluidAudio v0.15.6, локальная модель
-`FluidInference/parakeet-tdt-0.6b-v3-coreml` и собранный `ParakeetWorker.swift`.
-Используется INT8 encoder, `cpuAndNeuralEngine`, автоматический язык без hint.
-Штатный `SlidingWindowAsrManager.default` обрабатывает окна последовательно:
-11 секунд нового аудио, 2 секунды слева и 2 секунды справа. Параметры пакетной
-обработки `parallelChunkConcurrency` и `melChunkContext` в этом пути не используются.
-Модели загружаются один раз из проверенных локальных файлов; новой сессии
-создаётся отдельное состояние. Загрузок из сети нет, сеть worker запрещена
-системной sandbox-политикой. Подкачка не служит критерием остановки.
+Requires an installed FluidAudio v0.15.6, the local
+`FluidInference/parakeet-tdt-0.6b-v3-coreml` model, and a built
+`ParakeetWorker.swift`. The INT8 encoder, `cpuAndNeuralEngine`, and
+automatic language without a hint are used. The stock
+`SlidingWindowAsrManager.default` processes windows sequentially:
+11 seconds of new audio with 2 seconds of context on each side. The
+batch parameters `parallelChunkConcurrency` and `melChunkContext` are
+not used on this path. Models load once from verified local files; each
+new session gets separate state. There are no network downloads; the
+worker's network is forbidden by the system sandbox policy. Swapping is
+not a stop criterion.
 
-Из папки `scripts/` запустите подготовленным Python:
+From the `scripts/` folder, run with the prepared Python:
 
 ```bash
 "$BACKEND_PYTHON" -m local_live_preview.serve_parakeet \
@@ -38,45 +42,48 @@ CV1 передаёт Opus; backend декодирует его в PCM16 little-e
   --port 18090
 ```
 
-Переменные обозначают пути к существующему backend Python, собранному worker
-и папке `parakeet-tdt-0.6b-v3` с моделями. Подготовленные компоненты
-переиспользуются; WLK-код и его модель сохранены для отдельного явного возврата.
-Файл блокировки должен принадлежать тому же экземпляру локального backend,
-который выполняет финальное распознавание. Дождитесь `model_ready`;
-`http://127.0.0.1:18090/health` содержит только технические показатели.
+The variables point to the existing backend Python, the built worker,
+and the `parakeet-tdt-0.6b-v3` model folder. Prepared components are
+reused; the WLK code and its model are kept for a separate explicit
+return. The lock file must belong to the same local backend instance
+that runs the final transcription. Wait for `model_ready`;
+`http://127.0.0.1:18090/health` carries only technical indicators.
 
-При запуске backend передайте
+When starting the backend, pass
 `OMI_LOCAL_LIVE_PREVIEW_URL=ws://127.0.0.1:18090/asr`.
-Перезапускать нужно только принадлежащий этому экземпляру backend, после Stop
-текущей записи. Уже работающий процесс не подхватывает новую переменную.
-Без этой переменной preview выключен. Это отдельный пробный запуск;
-`start.command` пока не управляет live-процессом автоматически.
+Restart only the backend owned by this instance, after the current
+recording's Stop. An already-running process does not pick up the new
+variable. Without the variable, the preview is off. This is a separate
+experimental run; `start.command` does not manage the live process yet.
 
-## Проверка на iPhone
+## Verifying on the phone
 
-Начните запись одиночным нажатием физической кнопки CV1, затем нажмите карточку
-записи в приложении. Говорите30–60 секунд, сделав паузу.
-Первый текст ожидается примерно через13 секунд, следующие обновления — через11 секунд.
-Проверьте, что новые фразы добавляются и ранние остаются. Нажмите кнопку CV1 ещё раз и проверьте WAV и появление
-финального текста в аудиотеке.
+Start a recording with a single press of the physical CV1 button, then
+tap the recording card in the app. Speak for 30–60 seconds with a pause.
+The first text is expected in about 13 seconds, later updates every
+11 seconds. Check that new phrases are appended and earlier ones stay.
+Press the CV1 button again and check the WAV and the final text in the
+library.
 
-Для отдельной пробы микрофона iPhone отключите Omi, оставьте связь с Mac и
-выключенный Transcribe Later. Исходная нижняя кнопка «+» запускает микрофон
-и открывает штатный экран записи; длительное нажатие показывает меню.
-Локальный capture controller запрещает запуск телефона при подключённом Omi;
-переключение источников во время записи не входит в пробу.
-Без сети штатный телефонный fallback может записывать локально, но доставка
-таких записей в эту аудиотеку пока не подключена.
+For a separate phone-microphone trial, disconnect the Omi, keep the Mac
+link, and keep Transcribe Later off. The original bottom "+" button
+starts the microphone and opens the stock recording screen; a long press
+shows the menu. The local capture controller forbids starting the phone
+while an Omi is connected; switching sources during a recording is out
+of scope. Without a network the stock phone fallback can record locally,
+but delivering such recordings into this library is not wired up yet.
 
-Телефон при Stop сразу закрывает `/v4/listen`; backend отдельно отправляет EOF
-в Parakeet и завершает сессию. Поэтому остаток текста после Stop может уже не попасть
-на экран. Следующая сессия получает новый сегмент и пустой контекст распознавания.
-Live использует одного условного говорящего; его таймкоды не являются финальными.
-Ранние токены сохраняются без последующего пересмотра. Это пробная выдача по
-окнам, а не пословное обновление; человеческая оценка качества ещё требуется.
+On Stop the phone closes `/v4/listen` immediately; the backend sends EOF
+to Parakeet separately and ends the session. Text remaining after Stop
+may not reach the screen. The next session gets a new segment and empty
+recognition context. Live uses one nominal speaker; its timestamps are
+not final. Early tokens are kept without later revision. This is
+windowed experimental output, not word-level updating; human quality
+assessment is still needed.
 
-Одновременно распознаётся одна запись. Если live или финальное распознавание
-заняты, preview нового соединения недоступен; сохранение WAV продолжается.
-После отказа `/asr` повторного подключения внутри записи нет. Лимиты транспортного
-буфера и ожидания завершения защищают запись от зависшего preview и не являются
-критериями качества распознавания. Аудио и текст не записываются в live-логи.
+One recording is transcribed at a time. If live or final transcription
+is busy, the preview is unavailable for a new connection; WAV saving
+continues. After an `/asr` failure there is no reconnect within the
+recording. Transport buffer limits and completion timeouts protect the
+recording from a hung preview and are not recognition quality criteria.
+Audio and text are never written to live logs.

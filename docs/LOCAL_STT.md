@@ -1,46 +1,51 @@
-# Распознавание записей
+# Transcribing recordings
 
-Текст создаётся на Mac после окончания записи. Спорные места можно прослушать
-по таймкоду в `omiloc`. Приложение на iPhone для смены движка переустанавливать не нужно.
+Text is produced on the Mac after a recording ends. Ambiguous spots can
+be replayed by timestamp in `omiloc`. Changing the engine does not
+require reinstalling the phone app.
 
-Отдельное пробное подключение чернового текста во время записи описано в
-[Live preview](LIVE_PREVIEW.md); оно сохраняет текущую финальную обработку WAV.
+A separate experimental draft-text feed during recording is described in
+[Live preview](LIVE_PREVIEW.md); it keeps the current final WAV
+processing intact.
 
 ## WhisperKit
 
-Выбранный профиль — **large-v3-turbo**, Core ML-вариант
-`openai_whisper-large-v3-v20240930_626MB`; для audio encoder и text decoder
-используется `cpuAndNeuralEngine`.
+The chosen profile is **large-v3-turbo**, Core ML variant
+`openai_whisper-large-v3-v20240930_626MB`; the audio encoder and text
+decoder use `cpuAndNeuralEngine`.
 
-Прежние экспериментальные отчёты о скорости и качестве моделей устарели
-и удалены 9 сентября 2026 года. Качество и скорость этого профиля оцениваются заново.
+The earlier experimental model speed/quality reports were outdated and
+removed on September 9, 2026. This profile's quality and speed are being
+evaluated anew.
 
-После подготовки Mac через `start.command` выполните из папки проекта:
+After preparing the Mac with `start.command`, run from the project folder:
 
 ```bash
 bash scripts/install-local-whisperkit.sh
 ```
 
-Нужны Apple Silicon, macOS 14 или новее, Xcode со Swift 5.10 или новее,
-интернет для установки и минимум 4 ГиБ свободного места. Установщик собирает
-WhisperKit 1.1.0 и скачивает около 630 МБ: сжатую large-v3-turbo и токенизатор.
-Аккаунт Hugging Face не нужен. Файлы и контрольные суммы закреплены в репозитории.
-Первый запуск может занять несколько минут: Core ML подготавливает модель.
-Готовность проверяется на синтетической русской речи с таймкодами и запрещённой сетью.
+Requirements: Apple Silicon, macOS 14 or newer, Xcode with Swift 5.10 or
+newer, internet for the install, and at least 4 GiB free. The installer
+builds WhisperKit 1.1.0 and downloads about 630 MB: the compressed
+large-v3-turbo and the tokenizer. No Hugging Face account is needed.
+Files and checksums are pinned in the repository. The first run can take
+several minutes while Core ML prepares the model. Readiness is verified
+on synthetic timed speech with the network forbidden.
 
-Окружение находится в `.local/whisperkit/`. При прерывании повторите команду:
-проверенные загрузки и подходящая сборка используются повторно. Ошибки компиляции
-сохраняются в `.local/whisperkit/build.log`. Проверка готовых файлов без сборки:
-`bash scripts/install-local-whisperkit.sh --check`.
+The environment lives in `.local/whisperkit/`. If interrupted, repeat the
+command: verified downloads and a matching build are reused. Compiler
+errors land in `.local/whisperkit/build.log`. To check finished files
+without building: `bash scripts/install-local-whisperkit.sh --check`.
 
-Установщик готовит движок отдельно от работающей обработки. Если она уже включена,
-дождитесь окончания текущей записи и распознавания, затем выполните:
+The installer prepares the engine apart from live processing. If
+processing is already on, wait for the current recording and
+transcription to finish, then run:
 
 ```bash
 bash scripts/local-mac.sh auto-transcribe-off
 ```
 
-Сохраните в `.local/dev-harness/ngrok/stt-engine.json`:
+Save to `.local/dev-harness/ngrok/stt-engine.json`:
 
 ```json
 {
@@ -51,44 +56,48 @@ bash scripts/local-mac.sh auto-transcribe-off
 }
 ```
 
-Затем включите обработку:
+Then enable processing:
 
 ```bash
 bash scripts/local-mac.sh auto-transcribe-on
 ```
 
-WhisperKit читает готовые локальные файлы модели; сеть запрещена для каждого
-процесса распознавания. Профиль Core ML — CPU и Neural Engine, одна задача одновременно.
-Сегменты и слова получают таймкоды и одного говорящего `SPEAKER_00`.
-Гипотезы за границей исходного аудио исключаются. Для слова, пересекающего
-конец записи, сохраняется только интервал внутри WAV; предыдущая речь сохраняется.
-`"language": "auto"` определяет язык записи. Принудительный `"language": "ru"`
-может дать русский текст даже для английской речи; используйте его только
-для заведомо русскоязычных записей.
+WhisperKit reads prepared local model files; the network is forbidden for
+every transcription process. The Core ML profile is CPU plus Neural
+Engine, one task at a time. Segments and words get timestamps and a
+single speaker `SPEAKER_00`. Hypotheses beyond the source audio boundary
+are dropped. For a word crossing the end of the recording, only the
+interval inside the WAV is kept; preceding speech is preserved.
+`"language": "auto"` detects the recording language. Forcing
+`"language": "ru"` can produce Russian text even for English speech; use
+it only for recordings known to be Russian.
 
-Новые записи будут обрабатываться автоматически. Текст появится в аудиотеке;
-на iPhone обновите список и откройте «Локальная запись». Mac должен работать и не спать.
-Записи, существовавшие до первого включения обработки, нужно передать вручную.
-Старые транскрипты сохраняются; смена движка сама по себе не перераспознаёт архив.
-Уже начатые задачи сохраняют выбранный движок при повторе.
-Если WhisperKit не обнаружил речи, аудиотека показывает «Речь не обнаружена».
-WAV остаётся доступен для прослушивания; пустой результат сохраняется без создания
-текстовой записи и повторных попыток распознавания.
+New recordings are processed on their own. Text appears in the library;
+on the phone, refresh the list and open "Local recording". The Mac must
+stay awake. Recordings that existed before processing was first enabled
+must be submitted by hand. Old transcripts are kept; switching engines
+does not re-transcribe the archive by itself. Tasks already started keep
+their chosen engine on retry. If WhisperKit finds no speech, the library
+shows "No speech detected". The WAV stays playable; the empty result is
+recorded without creating a text entry or retrying.
 
-| Действие | Команда из папки проекта |
+| Action | Command from the project folder |
 |---|---|
-| Проверить обработку | `bash scripts/local-mac.sh transcription-status` |
-| Выключить, сохранив записи | `bash scripts/local-mac.sh auto-transcribe-off` |
-| Обработать файл или повторить после ошибки | `bash scripts/local-mac.sh transcribe "/путь/к/записи.wav"` |
+| Check processing | `bash scripts/local-mac.sh transcription-status` |
+| Turn off, keeping recordings | `bash scripts/local-mac.sh auto-transcribe-off` |
+| Process a file or retry after an error | `bash scripts/local-mac.sh transcribe "/path/to/recording.wav"` |
 
-Подходит WAV PCM16, mono, 16 kHz. Повтор с тем же файлом и профилем использует
-сохранённый результат. После перезагрузки Mac снова запустите `start.command`.
+WAV PCM16, mono, 16 kHz is expected. A repeat with the same file and
+profile reuses the saved result. After a Mac reboot, run `start.command`
+again.
 
-## Другие подготовленные движки
+## Other prepared engines
 
-WhisperX и Parakeet остаются доступными для старых задач и явного выбора.
-Для WhisperX прежний установщик — `bash scripts/install-local-stt.sh`; он готовит
-large-v3-turbo/ru/CPU/float32 без разделения говорящих в `.local/stt/`.
-Прежнее ручное окружение Python и его модели не удаляются при установке WhisperKit.
+WhisperX and Parakeet remain available for old tasks and explicit
+selection. For WhisperX the previous installer is
+`bash scripts/install-local-stt.sh`; it prepares
+large-v3-turbo/ru/CPU/float32 without speaker separation in `.local/stt/`.
+The earlier manual Python environment and its models are not removed by
+the WhisperKit install.
 
-[Параметры WhisperX, Parakeet и требования к окружению](DEVELOPMENT.md#модели-распознавания).
+[WhisperX and Parakeet parameters, environment requirements](DEVELOPMENT.md#speech-models)

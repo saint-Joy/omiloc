@@ -1,25 +1,25 @@
 # omiloc
 
-Личная аудиотека на Mac: записи с Omi CV1, транскрипты и плеер с переходом по фразе.
-Записью управляет приложение на iPhone. Аудио передаётся через ngrok;
-хранение и распознавание остаются на Mac.
+A personal audio library on your Mac: Omi CV1 recordings, local
+transcription, and a player that jumps to any phrase. The phone app
+controls recording; audio travels over your home Wi-Fi straight to the
+Mac. Storage and speech recognition never leave your machine.
 
-Откройте **[start.command](start.command)** или выполните `./start.command`
-из папки проекта. Скрипт подготовит Mac, покажет домен и ключ для iPhone
-и откроет аудиотеку. [Инструкция по запуску](docs/START.md).
+Open **[start.command](start.command)** (double-click, or `./start.command`
+from the project folder). It prepares the Mac, shows the pairing key for
+the phone, and opens the library. [Setup guide](docs/START.md).
 
-После настройки команда **`omiloc`** открывает аудиотеку из любой папки в Terminal.
-Для приёма новых записей запускайте `start.command`.
+After setup, the **`omiloc`** command opens the library from any Terminal
+folder. To receive new recordings, run `start.command`.
 
-Папки с аудио и транскриптами можно открыть в Finder через свёрнутый пункт
-**«Папки»** внизу боковой панели аудиотеки.
+You need an Apple Silicon Mac, a CV1, and the phone app installed
+separately. Prepare the [speech models](docs/LOCAL_STT.md) once.
+The phone and the Mac pair over the local network — no accounts, no
+tunnels. Remote access over ngrok stays available as an option
+([details](docs/NGROK.md)).
 
-Нужны Mac с Apple Silicon, CV1 и отдельно установленное приложение на iPhone.
-Для распознавания один раз [подготовьте модели](docs/LOCAL_STT.md).
-Полная установка на чистом Mac ещё не проверена.
+[Phone pairing](docs/NGROK.md) · [Transcription](docs/LOCAL_STT.md) ·
+[Limitations](docs/TEMPORARY_DISABLED_FEATURES.md) · [Development](docs/DEVELOPMENT.md)
 
-[Подключение iPhone](docs/NGROK.md) · [Распознавание](docs/LOCAL_STT.md) ·
-[Ограничения](docs/TEMPORARY_DISABLED_FEATURES.md) · [Для разработчиков](docs/DEVELOPMENT.md).
-
-Основан на [Omi от Based Hardware](https://github.com/BasedHardware/omi).
-[Происхождение](UPSTREAM.md) · [MIT](LICENSE) · [Логотип](web-local/assets/omiloc.png).
+Based on [Omi by Based Hardware](https://github.com/BasedHardware/omi).
+[Origin](UPSTREAM.md) · [MIT](LICENSE) · [Logo](web-local/assets/omiloc.png)
