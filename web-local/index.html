@@ -1,56 +1,57 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Ваши аудиозаписи и транскрипты на этом Mac.">
-  <title>omiloc · Записи</title>
+  <meta name="description" content="Your audio recordings and transcripts on this Mac.">
+  <title>omiloc · Recordings</title>
   <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/assets/fonts/play.css">
   <link rel="stylesheet" href="/style.css">
   <script type="module" src="/app.js"></script>
 </head>
 <body>
-  <header class="topbar"><a class="brand" href="/" aria-label="omiloc — записи">omiloc<span class="brand-dot"></span></a><span class="top-label">Личная аудиотека</span><span class="local-badge"><span></span>На этом Mac</span></header>
+  <header class="topbar"><a class="brand" href="/" aria-label="omiloc — recordings">omiloc<span class="brand-dot"></span></a><span class="top-label">Personal audio library</span><span class="local-badge"><span></span>On this Mac</span></header>
   <main class="workspace">
-    <aside class="library" aria-label="Аудиозаписи">
-      <div class="library-heading"><div><p class="eyebrow">БИБЛИОТЕКА</p><h1>Записи <span id="count"></span></h1></div><button id="refresh" class="icon-button" title="Обновить список" aria-label="Обновить список">↻</button></div>
-      <label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Найти запись…" aria-label="Поиск по дате, источнику и началу транскрипта"></label>
-      <div class="filters" aria-label="Фильтр записей"><button id="filter-all" class="filter selected" aria-pressed="true">Все записи</button><button id="filter-ready" class="filter" aria-pressed="false">С транскриптом</button></div>
+    <aside class="library" aria-label="Recordings">
+      <div class="library-heading"><div><p class="eyebrow">LIBRARY</p><h1>Recordings <span id="count"></span></h1></div><button id="refresh" class="icon-button" title="Refresh list" aria-label="Refresh list">↻</button></div>
+      <label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Find a recording…" aria-label="Search by date, source, and transcript opening"></label>
+      <div class="filters" aria-label="Filter recordings"><button id="filter-all" class="filter selected" aria-pressed="true">All recordings</button><button id="filter-ready" class="filter" aria-pressed="false">With transcript</button></div>
       <p id="connection" class="connection" role="status" hidden></p>
-      <div id="recordings" class="recordings"><p class="empty-list">Загружаем записи…</p></div>
+      <div id="recordings" class="recordings"><p class="empty-list">Loading recordings…</p></div>
       <footer class="library-footer">
-        <p class="library-note">Звук и текст хранятся локально.</p>
+        <p class="library-note">Audio and text stay on this machine.</p>
         <details class="library-folders">
-          <summary>Папки</summary>
+          <summary>Folders</summary>
           <div class="folder-actions">
-            <button type="button" data-folder="audio">Открыть папку с аудио</button>
-            <button type="button" data-folder="transcripts">Открыть папку с транскриптами</button>
+            <button type="button" data-folder="audio">Open audio folder</button>
+            <button type="button" data-folder="transcripts">Open transcripts folder</button>
           </div>
           <p id="folder-message" class="folder-message" role="status" hidden></p>
         </details>
       </footer>
     </aside>
-    <section class="detail" aria-label="Просмотр записи">
-      <div id="welcome" class="welcome"><span class="welcome-mark" aria-hidden="true">◉</span><h2>Место для ваших разговоров</h2><p>Выберите запись, чтобы послушать<br>и вернуться к нужным словам.</p></div>
+    <section class="detail" aria-label="Recording view">
+      <div id="welcome" class="welcome"><span class="welcome-mark" aria-hidden="true">◉</span><h2>A place for your conversations</h2><p>Pick a recording to listen<br>and return to the words that matter.</p></div>
       <div id="recording-detail" class="recording-detail" hidden>
-        <header class="detail-heading"><div class="detail-actions"><p id="recording-date" class="eyebrow"></p><button id="delete" class="delete-button">Удалить запись</button></div><h2 id="recording-title"></h2><div id="recording-meta" class="recording-meta"></div></header>
-        <div class="transcript-heading"><h3>Транскрипт</h3><span>Нажмите на фразу, чтобы послушать</span></div>
+        <header class="detail-heading"><div class="detail-actions"><p id="recording-date" class="eyebrow"></p><button id="delete" class="delete-button">Delete recording</button></div><h2 id="recording-title"></h2><div id="recording-meta" class="recording-meta"></div></header>
+        <div class="transcript-heading"><h3>Transcript</h3><span>Click a phrase to play it</span></div>
         <div id="transcript" class="transcript"></div>
       </div>
       <footer id="player" class="player" hidden>
         <audio id="audio" preload="metadata"></audio>
-        <div class="player-top"><span id="player-title"></span><label class="speed-label">Скорость <select id="speed" aria-label="Скорость воспроизведения"><option value="0.75">0,75×</option><option value="1" selected>1×</option><option value="1.25">1,25×</option><option value="1.5">1,5×</option><option value="2">2×</option></select></label></div>
-        <div class="player-controls"><button id="back" class="skip" aria-label="Назад на 10 секунд">−10</button><button id="play" class="play" aria-label="Воспроизвести">▶</button><button id="forward" class="skip" aria-label="Вперёд на 10 секунд">+10</button><span id="elapsed" class="time">0:00</span><input id="seek" type="range" min="0" max="0" step="0.01" value="0" aria-label="Позиция воспроизведения"><span id="duration" class="time">0:00</span></div>
+        <div class="player-top"><span id="player-title"></span><label class="speed-label">Speed <select id="speed" aria-label="Playback speed"><option value="0.75">0.75×</option><option value="1" selected>1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label></div>
+        <div class="player-controls"><button id="back" class="skip" aria-label="Back 10 seconds">−10</button><button id="play" class="play" aria-label="Play">▶</button><button id="forward" class="skip" aria-label="Forward 10 seconds">+10</button><span id="elapsed" class="time">0:00</span><input id="seek" type="range" min="0" max="0" step="0.01" value="0" aria-label="Playback position"><span id="duration" class="time">0:00</span></div>
         <p id="player-message" class="player-message" role="status" hidden></p>
       </footer>
     </section>
   </main>
   <dialog id="delete-dialog" aria-labelledby="delete-title" aria-describedby="delete-description">
-    <h2 id="delete-title">Удалить запись?</h2>
-    <p id="delete-description">Аудио, транскрипт и связанный разговор в приложении будут удалены с Mac. Это действие нельзя отменить.</p>
-    <p class="dialog-note">После удаления обновите список разговоров на iPhone, потянув его вниз. Если аудио дублируется в другой записи, общий транскрипт сохранится до удаления последней копии.</p>
+    <h2 id="delete-title">Delete this recording?</h2>
+    <p id="delete-description">The audio, the transcript, and the linked conversation in the app will be removed from the Mac. This cannot be undone.</p>
+    <p class="dialog-note">After deleting, pull the conversation list down in the phone app to refresh it. If the audio is duplicated in another recording, the shared transcript stays until the last copy is deleted.</p>
     <p id="delete-error" class="player-message" role="alert" hidden></p>
-    <div class="dialog-actions"><button id="delete-cancel" autofocus>Отмена</button><button id="delete-confirm" class="danger">Удалить</button></div>
+    <div class="dialog-actions"><button id="delete-cancel" autofocus>Cancel</button><button id="delete-confirm" class="danger">Delete</button></div>
   </dialog>
 </body>
 </html>
