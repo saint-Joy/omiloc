@@ -68,7 +68,7 @@ for formula in uv node@22 openjdk@21 redis opus ffmpeg jq; do
   if ! brew list --versions "$formula" >/dev/null 2>&1; then
     install_stage="установить $formula"
     install_remedy="Проверьте интернет; для повтора: brew install $formula."
-    echo "Устанавливаем $formula…"
+    echo "Устанавливаем ${formula}…"
     run_step brew install "$formula"
   fi
 done
