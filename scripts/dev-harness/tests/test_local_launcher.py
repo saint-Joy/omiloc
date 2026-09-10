@@ -44,7 +44,7 @@ def test_install_refuses_existing_command_before_profile_change(layout):
     target = home / '.local/bin/omiloc'
     target.parent.mkdir(parents=True)
     target.write_text('user program')
-    with pytest.raises(local_launcher.LauncherError, match='уже занято'):
+    with pytest.raises(local_launcher.LauncherError, match='already taken'):
         local_launcher.install(repo, home=home)
     assert target.read_text() == 'user program'
     assert not (home / '.zprofile').exists()
@@ -58,7 +58,7 @@ def test_install_refuses_foreign_command_elsewhere_on_path(layout, monkeypatch):
     command.write_text('#!/bin/sh\nexit 0\n')
     command.chmod(0o755)
     monkeypatch.setenv('PATH', str(other))
-    with pytest.raises(local_launcher.LauncherError, match='другая команда'):
+    with pytest.raises(local_launcher.LauncherError, match='another omiloc command'):
         local_launcher.install(repo, home=home)
     assert not (home / '.local').exists()
     assert not (home / '.zprofile').exists()

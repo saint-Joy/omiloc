@@ -5,17 +5,17 @@ umask 077
 cd "$(dirname "$0")"
 
 if [[ "${1:-}" == --help ]]; then
-  printf 'omiloc — запуск на Mac\n\n  ./start.command                 Подготовить и запустить\n  ./start.command --check         Проверить сервисы Mac\n  ./start.command --iphone-check  Проверить подготовку к установке на iPhone\n\nПояснения: docs/START.md\n'
+  printf 'omiloc — Mac launcher\n\n  ./start.command                 Prepare and start\n  ./start.command --check         Check the Mac services\n  ./start.command --iphone-check  Check iPhone install readiness\n\nDetails: docs/START.md\n'
   exit 0
 fi
 if [[ "${1:-}" != '' && "${1:-}" != --check && "${1:-}" != --iphone-check ]]; then
-  echo 'Доступные команды: ./start.command --help' >&2
+  echo 'Available commands: ./start.command --help' >&2
   exit 1
 fi
 source scripts/macos-runtime.sh
 omi_require_apple_silicon "$PWD/start.command" "$@"
 for input in backend/.python-version backend/pylock.macos.toml package.json package-lock.json firebase.json web-local/index.html; do
-  [[ -s "$input" ]] || { echo "Не хватает файла проекта: $input" >&2; exit 1; }
+  [[ -s "$input" ]] || { echo "Missing project file: $input" >&2; exit 1; }
 done
 omi_macos_path
 if [[ "${1:-}" == --iphone-check ]]; then
@@ -26,7 +26,7 @@ if [[ "${1:-}" == --check ]]; then
   exec bash scripts/local-mac.sh setup-check
 fi
 if [[ ! -t 0 || ! -t 1 ]]; then
-  echo 'Откройте start.command в Terminal. Ключи показываются только в локальном терминале.' >&2
+  echo 'Open start.command in Terminal. Keys are shown only in a local terminal.' >&2
   exit 1
 fi
 printf '\nomiloc\n\n'
@@ -43,13 +43,13 @@ else
   needs_install=1
 fi
 if [[ "$needs_install" == 1 ]]; then
-  echo 'Подготавливаем недостающие зависимости. Первый запуск может занять несколько минут.'
-  echo 'Если система запросит пароль Mac, введите его в этом терминале.'
+  echo 'Preparing missing dependencies. The first run can take several minutes.'
+  echo 'If the system asks for your Mac password, enter it in this terminal.'
   until bash scripts/install-local-mac.sh --quiet; do
-    printf '\nПодготовка остановлена.\n' >&2
-    [[ ! -f .local/install.log ]] || echo 'Лог: .local/install.log' >&2
-    echo 'Исправьте причину по подсказке выше. Пояснения: docs/START.md' >&2
-    read -r -p 'Enter — повторить проверку и установку; q — выйти: ' retry || exit 1
+    printf '\nPreparation stopped.\n' >&2
+    [[ ! -f .local/install.log ]] || echo 'Log: .local/install.log' >&2
+    echo 'Fix the cause per the hint above. Details: docs/START.md' >&2
+    read -r -p 'Enter — retry the check and install; q — quit: ' retry || exit 1
     [[ "$retry" != q && "$retry" != Q ]] || exit 1
     omi_macos_path
   done

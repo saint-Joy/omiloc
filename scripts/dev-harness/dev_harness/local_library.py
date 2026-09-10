@@ -208,17 +208,17 @@ def handler(library, assets, delete=None):
                     or self.headers.get('X-Omiloc-Request') != 'open-folder'
                     or self.headers.get('Sec-Fetch-Site', 'none') not in {'same-origin', 'none'}
                     or any(k.lower() == 'forwarded' or k.lower().startswith('x-forwarded-') for k in self.headers)):
-                return self.send_json({'error': 'Открыть папку можно только на этом Mac.'}, 403)
+                return self.send_json({'error': 'Folders can be opened only on this Mac.'}, 403)
             match = re.fullmatch(r'/api/folders/(audio|transcripts)/open', self.path)
             if not match:
-                return self.send_json({'error': 'Папка не найдена.'}, 404)
+                return self.send_json({'error': 'Folder not found.'}, 404)
             try:
                 library.open_folder(match[1])
                 self.send_json({'status': 'opened'})
             except subprocess.TimeoutExpired:
-                self.send_json({'error': 'Ответ задерживается. Проверьте Finder.'}, 504)
+                self.send_json({'error': 'The response is taking long. Check Finder.'}, 504)
             except (OSError, subprocess.CalledProcessError):
-                self.send_json({'error': 'Не удалось открыть папку. Проверьте, что она существует и Finder доступен.'}, 503)
+                self.send_json({'error': 'Could not open the folder. Check that it exists and Finder is available.'}, 503)
 
         def do_DELETE(self):
             expected = f'127.0.0.1:{self.server.server_port}'
@@ -226,9 +226,9 @@ def handler(library, assets, delete=None):
                     or self.headers.get('X-Omiloc-Request') != 'delete'
                     or self.headers.get('Sec-Fetch-Site', 'none') not in {'same-origin', 'none'}
                     or any(k.lower() == 'forwarded' or k.lower().startswith('x-forwarded-') for k in self.headers)):
-                return self.send_json({'error': 'Удаление доступно только на этом Mac.'}, 403)
+                return self.send_json({'error': 'Deletion is available only on this Mac.'}, 403)
             if not delete or not re.fullmatch(r'/api/recordings/[A-Za-z0-9_-]+', self.path):
-                return self.send_json({'error': 'Запись не найдена.'}, 404)
+                return self.send_json({'error': 'Recording not found.'}, 404)
             try:
                 with library.lock:
                     record = library.get(self.path.split('/')[-1])
@@ -237,10 +237,10 @@ def handler(library, assets, delete=None):
                 self.send_json(result)
             except ValueError as error:
                 from .local_library_delete import DeleteError
-                message = str(error) if isinstance(error, DeleteError) else 'Удаление не завершено. Обновите список и повторите.'
+                message = str(error) if isinstance(error, DeleteError) else 'Deletion did not finish. Refresh the list and retry.'
                 self.send_json({'error': message}, 409)
             except (OSError, KeyError):
-                self.send_json({'error': 'Удаление не завершено. Обновите список и повторите.'}, 409)
+                self.send_json({'error': 'Deletion did not finish. Refresh the list and retry.'}, 409)
 
         def do_GET(self):
             try:
@@ -248,7 +248,7 @@ def handler(library, assets, delete=None):
             except (BrokenPipeError, ConnectionResetError):
                 pass  # Normal when seeking or switching recordings.
             except (OSError, ValueError, KeyError, TypeError):
-                self.send_json({'error': 'Запись недоступна. Обновите список.'}, 404)
+                self.send_json({'error': 'Recording unavailable. Refresh the list.'}, 404)
 
         def serve(self):
             expected = f'127.0.0.1:{self.server.server_port}'
@@ -257,7 +257,7 @@ def handler(library, assets, delete=None):
                     or self.headers.get('Origin', f'http://{expected}') != f'http://{expected}'
                     or any(k.lower() == 'forwarded' or k.lower().startswith('x-forwarded-') for k in self.headers)
                     or (path.startswith('/api/') and self.headers.get('Sec-Fetch-Site', 'none') not in {'same-origin', 'none'})):
-                return self.send_json({'error': 'Доступ только с этого Mac.'}, 403)
+                return self.send_json({'error': 'Access only from this Mac.'}, 403)
             assets_map = {'/': ('index.html', 'text/html; charset=utf-8'),
                           '/style.css': ('style.css', 'text/css; charset=utf-8'),
                           '/app.js': ('app.js', 'text/javascript; charset=utf-8'),
@@ -299,7 +299,7 @@ def handler(library, assets, delete=None):
                         self.wfile.write(chunk)
                         remaining -= len(chunk)
             else:
-                self.send_json({'error': 'Не найдено.'}, 404)
+                self.send_json({'error': 'Not found.'}, 404)
     return Handler
 
 

@@ -93,7 +93,7 @@ def build_conversation(raw: dict, manifest: dict) -> Conversation:
         id=conversation_id, created_at=started, started_at=started,
         finished_at=started + timedelta(seconds=duration),
         source=manifest['source'], language=raw.get('language'),
-        structured=Structured(title='Локальная запись', overview='', emoji='🎙️'),
+        structured=Structured(title='Local recording', overview='', emoji='🎙️'),
         transcript_segments=segments, status='completed', uses_custom_stt=True,
         discarded=False, deferred=False,
         external_data={'local_transcript': {'version': 1, 'audio_sha256': digest, 'result_key': result_key,

@@ -16,14 +16,14 @@ from stt_install import InstallError, SOURCE, digest, recipe, verify_assets
 
 def verify_runtime(data: dict, source: Path = SOURCE) -> None:
     if tuple(sys.version_info[:3]) != tuple(map(int, data['python'].split('.'))):
-        raise InstallError('Версия Python изменилась. Повторите install-local-stt.sh.')
+        raise InstallError('The Python version changed. Repeat install-local-stt.sh.')
     pins = re.findall(r'^([A-Za-z0-9_.-]+)==(\S+)',
                       (source / 'requirements-whisperx-macos.txt').read_text(), re.MULTILINE)
     try:
         if not pins or any(metadata.version(name) != version for name, version in pins):
             raise ValueError('dependency drift')
     except (metadata.PackageNotFoundError, ValueError):
-        raise InstallError('Зависимости изменились. Повторите install-local-stt.sh.') from None
+        raise InstallError('Dependencies changed. Repeat install-local-stt.sh.') from None
 
 
 def offline(assets: Path) -> None:
@@ -36,7 +36,7 @@ def offline(assets: Path) -> None:
     # Reject Python network operations even when a library ignores its offline flag.
     def guard(event, args):
         if event in ('socket.connect', 'socket.getaddrinfo', 'socket.gethostbyname', 'socket.sendto'):
-            raise InstallError('Попытка сетевого обращения во время локального распознавания.')
+            raise InstallError('Network access attempted during local transcription.')
     sys.addaudithook(guard)
 
 
@@ -47,7 +47,7 @@ def check(assets: Path, *, load: bool = False) -> None:
     verify_assets(assets, data)
     for name, hashes in data['patches'].items():
         if digest(Path(sysconfig.get_path('purelib')) / name) != hashes['patched']:
-            raise InstallError('Правки WhisperX отсутствуют. Повторите install-local-stt.sh.')
+            raise InstallError('WhisperX patches are missing. Repeat install-local-stt.sh.')
     import onnxruntime
     onnxruntime.disable_telemetry_events()
     import torchcodec  # noqa: F401 — verifies the actual FFmpeg dynamic libraries
@@ -58,7 +58,7 @@ def check(assets: Path, *, load: bool = False) -> None:
     if load:
         fixture = SOURCE / data['smoke']['path']
         if digest(fixture) != data['smoke']['sha256']:
-            raise InstallError('Проверочный аудиофайл изменился.')
+            raise InstallError('The verification audio file changed.')
         with tempfile.TemporaryDirectory(prefix='omiloc-speech-check-') as temporary:
             transcribe(assets, [str(fixture), '--language', 'ru', '--device', 'cpu', '--compute_type', 'float32',
                                '--batch_size', '1', '--output_format', 'json', '--output_dir', temporary])
@@ -76,7 +76,7 @@ def validate_smoke(raw: dict, expected: list[str], duration: float) -> None:
              if isinstance(word.get('start'), (int, float)) and isinstance(word.get('end'), (int, float))
              and 0 <= word['start'] < word['end'] <= duration + 0.1]
     if len(words.intersection(expected)) < 3 or len(timed) < 4:
-        raise InstallError('Проверочная речь или таймкоды не распознаны.')
+        raise InstallError('Verification speech or timestamps were not recognized.')
 
 
 def transcribe(assets: Path, extra: list[str]) -> None:

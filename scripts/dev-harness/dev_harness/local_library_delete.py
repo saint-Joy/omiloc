@@ -25,7 +25,7 @@ def database_delete(cfg, digest, result_keys, *, check_only=False):
         capture_output=True, text=True, timeout=60,
     )
     if outcome.returncode or json.loads(outcome.stdout).get('status') != 'passed':
-        raise DeleteError('Не удалось проверить разговоры в приложении. Проверьте, что сервер Omi запущен.')
+        raise DeleteError('Could not check the conversations in the app. Make sure the Omi server is running.')
 
 
 def delete_recording(cfg, audio, *, delete_database=database_delete):
@@ -35,7 +35,7 @@ def delete_recording(cfg, audio, *, delete_database=database_delete):
     if (not safe_file(audio, root) or audio.parent.parent != root or audio.parent.is_symlink()
             or (audio.parent / 'audio.pcm.part').exists()
             or read_json(audio.parent / 'metadata.json').get('status') != 'completed'):
-        raise DeleteError('Можно удалить только завершённую запись.')
+        raise DeleteError('Only a finished recording can be deleted.')
     # No model work is started. The lock stops deletion racing an active import.
     transcripts.mkdir(mode=0o700, parents=True, exist_ok=True)
     fd = os.open(transcripts / '.lock', os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600)
@@ -43,7 +43,7 @@ def delete_recording(cfg, audio, *, delete_database=database_delete):
         try:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
-            raise DeleteError('Сейчас идёт распознавание. Дождитесь его завершения и повторите удаление.') from None
+            raise DeleteError('Transcription is in progress. Wait for it to finish and retry the deletion.') from None
         with audio.open('rb') as stream:
             digest = hashlib.file_digest(stream, 'sha256').hexdigest()
         folders, keys = [], []
@@ -55,7 +55,7 @@ def delete_recording(cfg, audio, *, delete_database=database_delete):
             if data.get('audio_sha256') == digest:
                 # Reject unexpected nested/symlink content before database mutation.
                 if any(p.is_symlink() for p in folder.rglob('*')):
-                    raise DeleteError('Результат распознавания изменён. Удаление остановлено.')
+                    raise DeleteError('The transcription result changed. Deletion stopped.')
                 folders.append(folder)
                 keys.append(data['result_key'])
         # Identical audio captures can share one transcript/Conversation. Preserve
@@ -76,7 +76,7 @@ def delete_recording(cfg, audio, *, delete_database=database_delete):
             except (OSError, ValueError, subprocess.SubprocessError) as error:
                 if isinstance(error, DeleteError):
                     raise
-                raise DeleteError('Связь с приложением не проверена. Удаление остановлено; попробуйте ещё раз.') from None
+                raise DeleteError('The app link is unverified. Deletion stopped; try again.') from None
             for folder in folders:
                 shutil.rmtree(folder)
         # Keep the capture until all database and transcript operations succeed.

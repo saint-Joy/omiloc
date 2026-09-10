@@ -158,10 +158,10 @@ def test_quiet_installer_keeps_private_log_and_stops_on_failure(tmp_path, failed
     assert 'dependency-diagnostic' not in result.stdout + result.stderr
     assert len((result.stdout + result.stderr).splitlines()) <= 4
     if failed:
-        assert 'Не удалось: подготовить Python' in result.stderr
+        assert 'Failed to prepare Python' in result.stderr
         assert '.local/install.log' in result.stderr
     else:
-        assert 'Проверяем готовность сервисов Mac' in result.stdout
+        assert 'Checking Mac service readiness' in result.stdout
         assert not result.stderr
     log = repo / '.local/install.log'
     assert log.stat().st_mode & 0o777 == 0o600

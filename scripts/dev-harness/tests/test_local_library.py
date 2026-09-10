@@ -212,7 +212,7 @@ def test_delete_preserves_files_on_db_failure_and_busy_inference(library, monkey
     assert audio.exists() and manifest.exists()
     with (library.transcripts / '.lock').open('w') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        with pytest.raises(deletion.DeleteError, match='распознавание'):
+        with pytest.raises(deletion.DeleteError, match='Transcription is in progress'):
             deletion.delete_recording(cfg, audio, delete_database=unavailable)
     calls = []
     deletion.delete_recording(cfg, audio, delete_database=lambda *args: calls.append(args))

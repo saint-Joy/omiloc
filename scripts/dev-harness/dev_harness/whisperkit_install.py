@@ -84,7 +84,7 @@ def install(root):
         reuse = (receipt.get('inputs') == expected and binary.is_file()
                  and receipt.get('executable_sha256') == stt_install.digest(binary))
         if not reuse:
-            print('WhisperKit: сборка локального обработчика…', flush=True)
+            print('WhisperKit: building the local processor…', flush=True)
             with (root / 'build.log').open('w') as log:
                 result = subprocess.run(['xcrun', 'swift', 'build', '-c', 'release', '--product', 'whisperkit-cli',
                                          '--disable-automatic-resolution', '-j', '2'],
@@ -94,10 +94,10 @@ def install(root):
             binary.parent.mkdir(exist_ok=True)
             shutil.copy2(root / 'source/.build/release/whisperkit-cli', binary)
             stt_install.atomic_json(receipt_path, {'inputs': expected, 'executable_sha256': stt_install.digest(binary)})
-        print('WhisperKit: проверка и загрузка модели (~630 МБ)…', flush=True)
+        print('WhisperKit: verifying and downloading the model (~630 MB)…', flush=True)
         for asset in data['assets']:
             stt_install.download(asset, root)
-        print('WhisperKit: проверка речи и таймкодов с запрещённой сетью…', flush=True)
+        print('WhisperKit: verifying speech and timestamps with the network forbidden…', flush=True)
         fixture = kit.SOURCE / 'fixtures/speech-check.wav'
         if stt_install.digest(fixture) != data['smoke_sha256']:
             raise kit.WhisperKitError('Synthetic speech fixture changed')
@@ -115,7 +115,7 @@ def install(root):
             'offline_speech_check': 'passed', 'swift': swift,
         })
         kit.installed(root)
-        print('WhisperKit подготовлен; активный движок не изменён.', flush=True)
+        print('WhisperKit is prepared; the active engine is unchanged.', flush=True)
 
 
 def main():
@@ -127,13 +127,13 @@ def main():
     try:
         if args.check:
             kit.installed(args.root)
-            print('WhisperKit: файлы проверены.')
+            print('WhisperKit: files verified.')
         else:
             install(args.root.resolve())
         return 0
     except (kit.WhisperKitError, stt_install.InstallError, OSError, subprocess.SubprocessError) as error:
         print(str(error) if isinstance(error, (kit.WhisperKitError, stt_install.InstallError)) else
-              'Подготовка WhisperKit остановлена. Повторите команду после проверки среды.')
+              'WhisperKit preparation stopped. Repeat the command after checking the environment.')
         return 1
 
 

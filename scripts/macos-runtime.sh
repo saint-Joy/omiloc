@@ -11,7 +11,7 @@ omi_require_apple_silicon() {
         ;;
     esac
   fi
-  echo 'Этот запуск рассчитан на Mac с Apple Silicon.' >&2
+  echo 'This launch expects a Mac with Apple Silicon.' >&2
   return 1
 }
 

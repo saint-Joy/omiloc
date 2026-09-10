@@ -121,7 +121,7 @@ def test_second_installer_does_not_invalidate_an_active_install(installation):
         blocked = subprocess.run(['bash', 'scripts/install-local-mac.sh', '--quiet'],
                                  cwd=repo, env=env, capture_output=True, text=True)
         assert blocked.returncode != 0
-        assert 'уже выполняется' in blocked.stderr
+        assert 'already running' in blocked.stderr
         assert not events.exists()
         assert ready.read_text() == 'existing completed installation'
 
@@ -144,10 +144,10 @@ if [[ ! -f .local/retry-allowed ]]; then exit 9; fi
     output = b''
     try:
         deadline = time.monotonic() + 10
-        while 'q — выйти: '.encode() not in output and time.monotonic() < deadline:
+        while 'q — quit: '.encode() not in output and time.monotonic() < deadline:
             if select.select([master], [], [], 0.1)[0]:
                 output += os.read(master, 65536)
-        assert 'повторить проверку и установку'.encode() in output
+        assert 'retry the check and install'.encode() in output
         assert not (repo / '.local/install.ready').exists()
         assert 'start' not in events.read_text().splitlines()
         (repo / '.local/retry-allowed').touch()
