@@ -107,4 +107,32 @@ void main() {
     expect(session.isSignedIn, isTrue);
     expect(SharedPreferencesUtil().uid, 'alice');
   });
+
+  test('wifi transport pairs over a private http address with an explicit port', () async {
+    final session = LocalMacSession(probe: (_, __) async => {'uid': 'alice'});
+    await session.connect('http://192.168.1.5:20000', key);
+    expect(session.isSignedIn, isTrue);
+    expect(session.address, 'http://192.168.1.5:20000/');
+    expect(session.permits(Uri.parse('http://192.168.1.5:20000/v1/health')), isTrue);
+    expect(session.permits(Uri.parse('ws://192.168.1.5:20000/v4/listen')), isTrue);
+    expect(session.permits(Uri.parse('https://192.168.1.5:20000/')), isFalse);
+    expect(session.permits(Uri.parse('http://192.168.1.6:20000/')), isFalse);
+    expect(session.permits(Uri.parse('http://192.168.1.5:20001/')), isFalse);
+  });
+
+  test('wifi transport rejects public, portless, and non-http addresses', () async {
+    final session = LocalMacSession(probe: (_, __) async => {'uid': 'alice'});
+    for (final bad in ['http://example.com:20000', 'http://192.168.1.5', 'ftp://192.168.1.5:20000']) {
+      await expectLater(session.connect(bad, key), throwsA(anything));
+      expect(session.isSignedIn, isFalse);
+    }
+  });
+
+  test('https pairing keeps rejecting private hosts and forbids http schemes on it', () async {
+    final session = LocalMacSession(probe: (_, __) async => {'uid': 'alice'});
+    await expectLater(session.connect('https://192.168.1.5/', key), throwsA(anything));
+    await session.connect(url, key);
+    expect(session.permits(Uri.parse('http://synthetic.ngrok.app/')), isFalse);
+    expect(session.permits(Uri.parse('wss://synthetic.ngrok.app/v4/listen')), isTrue);
+  });
 }

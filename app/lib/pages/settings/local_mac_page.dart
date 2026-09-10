@@ -69,7 +69,7 @@ class _LocalMacPageState extends State<LocalMacPage> {
               enabled: !_busy,
               keyboardType: TextInputType.url,
               autocorrect: false,
-              decoration: InputDecoration(labelText: context.l10n.localMacAddress, hintText: 'https://')),
+              decoration: InputDecoration(labelText: context.l10n.localMacAddress, hintText: 'http://<mac-ip>:20000')),
           const SizedBox(height: 16),
           TextField(
               key: const ValueKey('local-mac-key'),

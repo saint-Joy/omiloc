@@ -80,12 +80,15 @@ class LocalMacSession extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool permits(Uri uri) =>
-      _base != null &&
-      (uri.scheme == 'https' || uri.scheme == 'wss') &&
-      uri.userInfo.isEmpty &&
-      uri.host == _base!.host &&
-      (uri.hasPort ? uri.port : 443) == 443;
+  bool permits(Uri uri) {
+    final base = _base;
+    if (base == null || uri.userInfo.isNotEmpty || uri.host != base.host) return false;
+    final secure = base.scheme == 'https';
+    if (!(secure ? const {'https', 'wss'} : const {'http', 'ws'}).contains(uri.scheme)) return false;
+    final basePort = base.hasPort ? base.port : 443;
+    final defaultPort = (uri.scheme == 'https' || uri.scheme == 'wss') ? 443 : 80;
+    return (uri.hasPort ? uri.port : defaultPort) == basePort;
+  }
 
   String authorizationFor(Uri uri) {
     if (!permits(uri) || !isSignedIn) throw LocalMacUnauthorized();

@@ -37,20 +37,29 @@ abstract class Env {
   static bool get usesLocalTunnel => isOfflineRuntime && localTunnelConfigured;
 
   static Uri parseLocalTunnelUrl(String value) {
+    const invalid = FormatException('Enter the server address shown by the Mac, without a path or credentials.');
     final uri = Uri.tryParse(value.trim());
     if (uri == null ||
-        uri.scheme != 'https' ||
         uri.host.isEmpty ||
-        !uri.host.contains('.') ||
         uri.userInfo.isNotEmpty ||
-        uri.port != 443 ||
         uri.hasQuery ||
         uri.hasFragment ||
-        (uri.path.isNotEmpty && uri.path != '/') ||
-        isPrivateOrLoopbackHost(uri.host)) {
-      throw const FormatException('Enter an HTTPS server address without a path or credentials.');
+        (uri.path.isNotEmpty && uri.path != '/')) {
+      throw invalid;
     }
-    return Uri(scheme: 'https', host: uri.host.toLowerCase(), path: '/');
+    final host = uri.host.toLowerCase();
+    if (uri.scheme == 'https') {
+      // Remote transport (ngrok): a public HTTPS domain on 443.
+      if (!host.contains('.') || uri.port != 443 || isPrivateOrLoopbackHost(host)) throw invalid;
+      return Uri(scheme: 'https', host: host, path: '/');
+    }
+    if (uri.scheme == 'http') {
+      // Wi-Fi transport: the Mac on the local network, reachable only with
+      // the pairing key; a private host and an explicit port are required.
+      if (!isPrivateOrLoopbackHost(host) || !uri.hasPort || uri.port < 1024 || uri.port > 65535) throw invalid;
+      return Uri(scheme: 'http', host: host, port: uri.port, path: '/');
+    }
+    throw invalid;
   }
 
   static AppEnvironmentProfile get profile =>
