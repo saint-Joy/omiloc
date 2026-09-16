@@ -25,7 +25,7 @@ function renderList() {
     top.append(node('span', 'recording-length', formatTime(r.duration)));
     button.append(top, node('p', 'recording-preview', r.preview || statuses[r.status]));
     const bottom = node('span', 'recording-bottom');
-    bottom.append(node('span', 'source', r.source), node('span', '', statuses[r.status]));
+    bottom.append(node('span', 'source', r.source), node('span', `status-${r.status}`, statuses[r.status]));
     button.append(bottom);
     button.addEventListener('click', () => select(r.id));
     fragment.append(button);
@@ -81,7 +81,7 @@ async function select(id) {
     $('player').hidden = false;
     $('recording-date').textContent = day(record.started_at).toLocaleUpperCase('en-US');
     $('recording-title').textContent = `Recording at ${hour(record.started_at)}`;
-    $('recording-meta').replaceChildren(node('span', 'meta-pill', record.source), node('span', '', formatTime(record.duration)), node('span', '', statuses[record.status]));
+    $('recording-meta').replaceChildren(node('span', 'meta-pill', record.source), node('span', '', formatTime(record.duration)), node('span', `status-${record.status}`, statuses[record.status]));
     $('player-title').textContent = `${record.source} · ${hour(record.started_at)}`;
     $('duration').textContent = formatTime(record.duration);
     $('seek').max = record.duration;
@@ -130,7 +130,7 @@ async function refresh() {
       const record = await get(`/api/recordings/${id}`);
       if (state.selected === id && state.detail && (record.status !== state.detail.status || JSON.stringify(record.segments) !== JSON.stringify(state.detail.segments))) {
         state.detail = record;
-        $('recording-meta').replaceChildren(node('span', 'meta-pill', record.source), node('span', '', formatTime(record.duration)), node('span', '', statuses[record.status]));
+        $('recording-meta').replaceChildren(node('span', 'meta-pill', record.source), node('span', '', formatTime(record.duration)), node('span', `status-${record.status}`, statuses[record.status]));
         renderTranscript(record);
       }
     }

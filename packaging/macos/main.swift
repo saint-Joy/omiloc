@@ -87,11 +87,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate {
         <!doctype html><meta charset="utf-8">
         <style>
           body{margin:0;display:flex;align-items:center;justify-content:center;height:100vh;
-               background:#050705;color:#c9d6c9;font:17px/1.6 'Play',-apple-system,'Helvetica Neue',sans-serif}
+               background:#000000;color:#ffffff;font:17px/1.6 'Play',-apple-system,'Helvetica Neue',sans-serif}
           .card{max-width:34em;text-align:center;padding:2em}
-          h1{font-size:1.6em;font-weight:700;letter-spacing:.02em;color:#fff;margin:0 0 .6em}
-          p{margin:0;white-space:pre-line;color:#6f7f6f}
-          .dot{display:inline-block;width:.55em;height:.55em;border-radius:50%;background:#52e05a;box-shadow:0 0 8px #52e05a;
+          h1{font-size:1.6em;font-weight:700;color:#fff;margin:0 0 .5em}
+          p{margin:0;white-space:pre-line;color:#4b4b4d}
+          .dot{display:inline-block;width:.55em;height:.55em;border-radius:50%;background:#00fe00;
                margin-left:.4em;animation:b 1.2s infinite alternate}
           @keyframes b{to{opacity:.15}}
         </style>
