@@ -207,5 +207,11 @@
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>com.posthog.posthog.AUTO_INIT</key>
 	<false/>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Omi finds your Mac on the local network to pair with it.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_omiloc._tcp</string>
+	</array>
 </dict>
 </plist>

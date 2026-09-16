@@ -9,6 +9,7 @@ import 'package:omi/env/env.dart';
 import 'package:omi/l10n/app_localizations.dart';
 import 'package:omi/pages/settings/local_mac_page.dart';
 import 'package:omi/services/auth/local_mac_session.dart';
+import 'package:omi/services/local_mac_discovery.dart';
 import 'package:omi/utils/offline_network_policy.dart';
 
 void main() {
@@ -70,5 +71,34 @@ void main() {
     expect(session.isSignedIn, isTrue);
     expect(find.text('Open'), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('bonjour discovery fills the address and offers found Macs', (tester) async {
+    final session = LocalMacSession(probe: (_, __) async => {'uid': 'alice'});
+    final scan = Stream.fromIterable(const [
+      DiscoveredMac(name: 'omiloc', address: 'http://192.168.1.5:20000'),
+      DiscoveredMac(name: 'omiloc', address: 'http://192.168.1.5:20000'),
+      DiscoveredMac(name: 'studio', address: 'http://10.0.0.7:20000'),
+    ]);
+    await tester.pumpWidget(MaterialApp(
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: LocalMacPage(session: session, scan: () => scan, stopRecording: () async {}),
+    ));
+    await tester.pumpAndSettle();
+    // Duplicates collapse; the first find pre-fills the empty address field.
+    expect(find.byKey(const ValueKey('local-mac-found-http://192.168.1.5:20000')), findsOneWidget);
+    expect(find.byKey(const ValueKey('local-mac-found-http://10.0.0.7:20000')), findsOneWidget);
+    final address = tester.widget<TextField>(find.byKey(const ValueKey('local-mac-address')));
+    expect(address.controller!.text, 'http://192.168.1.5:20000');
+    // Tapping another found Mac replaces the address.
+    await tester.tap(find.byKey(const ValueKey('local-mac-found-http://10.0.0.7:20000')));
+    await tester.pump();
+    expect(address.controller!.text, 'http://10.0.0.7:20000');
   });
 }

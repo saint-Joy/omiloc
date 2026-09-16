@@ -1,16 +1,20 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:omi/providers/capture_provider.dart';
 import 'package:omi/services/auth/local_mac_session.dart';
+import 'package:omi/services/local_mac_discovery.dart';
 import 'package:omi/services/connectivity_service.dart';
 import 'package:omi/utils/l10n_extensions.dart';
 import 'package:omi/utils/enums.dart';
 
 class LocalMacPage extends StatefulWidget {
-  const LocalMacPage({super.key, this.session, this.stopRecording, this.refreshConnection});
+  const LocalMacPage({super.key, this.session, this.stopRecording, this.refreshConnection, this.scan});
   final LocalMacSession? session;
   final Future<void> Function()? stopRecording;
   final Future<void> Function()? refreshConnection;
+  final LocalMacScan? scan;
   @override
   State<LocalMacPage> createState() => _LocalMacPageState();
 }
@@ -21,9 +25,23 @@ class _LocalMacPageState extends State<LocalMacPage> {
   final _key = TextEditingController();
   bool _busy = false;
   String? _error;
+  final List<DiscoveredMac> _found = [];
+  StreamSubscription<DiscoveredMac>? _scan;
+
+  @override
+  void initState() {
+    super.initState();
+    // Bonjour browse fills the address; the pairing key stays manual.
+    _scan = (widget.scan ?? discoverLocalMacs)().listen((mac) {
+      if (_found.any((seen) => seen.address == mac.address)) return;
+      setState(() => _found.add(mac));
+      if (_address.text.trim().isEmpty) _address.text = mac.address;
+    }, onError: (_) {});
+  }
 
   @override
   void dispose() {
+    _scan?.cancel();
     _address.dispose();
     _key.dispose();
     super.dispose();
@@ -63,6 +81,21 @@ class _LocalMacPageState extends State<LocalMacPage> {
         body: ListView(padding: const EdgeInsets.all(24), children: [
           Text(context.l10n.localMacHelp),
           const SizedBox(height: 24),
+          if (_found.isNotEmpty) ...[
+            const Text('Found on this network'),
+            const SizedBox(height: 8),
+            Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final mac in _found)
+                    ActionChip(
+                        key: ValueKey('local-mac-found-${mac.address}'),
+                        label: Text('${mac.name} · ${mac.address}'),
+                        onPressed: _busy ? null : () => setState(() => _address.text = mac.address)),
+                ]),
+            const SizedBox(height: 16),
+          ],
           TextField(
               key: const ValueKey('local-mac-address'),
               controller: _address,
