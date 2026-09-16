@@ -1,3 +1,4 @@
+import 'package:omi/utils/prysm.dart';
 import 'package:omi/utils/platform/platform_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -228,7 +229,7 @@ class _PhoneCallsPageState extends State<PhoneCallsPage> with SingleTickerProvid
                 },
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-                  decoration: BoxDecoration(color: Colors.deepPurple, borderRadius: BorderRadius.circular(28)),
+                  decoration: BoxDecoration(color: Prysm.interest, borderRadius: BorderRadius.circular(28)),
                   child: Text(
                     context.l10n.phoneAllow,
                     style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),

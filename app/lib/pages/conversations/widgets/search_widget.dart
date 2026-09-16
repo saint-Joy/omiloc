@@ -1,3 +1,4 @@
+import 'package:omi/utils/prysm.dart';
 import 'package:omi/utils/platform/platform_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -134,7 +135,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: isActive ? Colors.deepPurple.withValues(alpha: 0.5) : const Color(0xFF1F1F25),
+                  color: isActive ? Prysm.interest.withValues(alpha: 0.5) : const Color(0xFF1F1F25),
                   borderRadius: BorderRadius.circular(24),
                 ),
                 child: IconButton(
@@ -161,7 +162,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: hasActiveFilter ? Colors.deepPurple.withValues(alpha: 0.5) : const Color(0xFF1F1F25),
+                  color: hasActiveFilter ? Prysm.interest.withValues(alpha: 0.5) : const Color(0xFF1F1F25),
                   borderRadius: BorderRadius.circular(24),
                 ),
                 child: IconButton(

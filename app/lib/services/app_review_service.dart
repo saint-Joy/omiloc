@@ -1,3 +1,4 @@
+import 'package:omi/utils/prysm.dart';
 import 'dart:io';
 
 import 'package:omi/utils/platform/platform_manager.dart';
@@ -167,7 +168,7 @@ class AppReviewService {
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepPurple,
+                        backgroundColor: Prysm.interest,
                         foregroundColor: Colors.white,
                         minimumSize: const Size(double.infinity, 48),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),

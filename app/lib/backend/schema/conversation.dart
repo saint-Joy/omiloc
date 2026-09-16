@@ -1,3 +1,4 @@
+import 'package:omi/utils/prysm.dart';
 import 'dart:convert';
 import 'dart:math';
 
@@ -643,7 +644,7 @@ class ServerConversation {
   }
 
   Color getTagTextColor() {
-    if (source == ConversationSource.screenpipe) return Colors.deepPurple;
+    if (source == ConversationSource.screenpipe) return Prysm.interest;
     return Colors.white;
   }
 

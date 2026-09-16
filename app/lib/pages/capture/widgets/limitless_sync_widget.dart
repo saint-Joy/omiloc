@@ -1,3 +1,4 @@
+import 'package:omi/utils/prysm.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
@@ -59,7 +60,7 @@ class LimitlessSyncCardWidget extends StatelessWidget {
                         if (await confirmSyncForCustomStt(context) && context.mounted) syncProvider.syncWals();
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepPurple,
+                        backgroundColor: Prysm.interest,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -81,7 +82,7 @@ class LimitlessSyncCardWidget extends StatelessWidget {
                   child: LinearProgressIndicator(
                     value: progress > 0 ? progress : null,
                     backgroundColor: Colors.grey.shade800,
-                    color: Colors.deepPurple,
+                    color: Prysm.interest,
                     minHeight: 4,
                   ),
                 ),

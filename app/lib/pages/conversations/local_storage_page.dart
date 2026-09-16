@@ -1,3 +1,4 @@
+import 'package:omi/utils/prysm.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -78,7 +79,7 @@ class _LocalStoragePageState extends State<LocalStoragePage> {
             onPressed: () => Navigator.of(context).pop(true),
             child: Text(
               context.l10n.enable,
-              style: const TextStyle(color: Colors.deepPurpleAccent, fontWeight: FontWeight.w600),
+              style: const TextStyle(color: Prysm.interest, fontWeight: FontWeight.w600),
             ),
           ),
         ],
@@ -125,7 +126,7 @@ class _LocalStoragePageState extends State<LocalStoragePage> {
                 children: [
                   Row(
                     children: [
-                      _buildFaIcon(FontAwesomeIcons.mobile, size: 20, color: Colors.deepPurpleAccent),
+                      _buildFaIcon(FontAwesomeIcons.mobile, size: 20, color: Prysm.interest),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
@@ -170,7 +171,7 @@ class _LocalStoragePageState extends State<LocalStoragePage> {
                         child: CupertinoSwitch(
                           value: isEnabled,
                           onChanged: _isSaving ? null : _toggleLocalStorage,
-                          activeTrackColor: Colors.deepPurpleAccent,
+                          activeTrackColor: Prysm.interest,
                         ),
                       ),
                     ],

@@ -1,3 +1,4 @@
+import 'package:omi/utils/prysm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -91,7 +92,7 @@ class WalListItem extends StatelessWidget {
       return const SizedBox(
         width: 16,
         height: 16,
-        child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation(Colors.deepPurpleAccent)),
+        child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation(Prysm.interest)),
       );
     }
     if (hasError || state == WalSyncDisplayState.failed || state == WalSyncDisplayState.retrying) {
@@ -100,12 +101,12 @@ class WalListItem extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
           decoration: BoxDecoration(
-            color: Colors.deepPurpleAccent.withValues(alpha: 0.15),
+            color: Prysm.interest.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(100),
           ),
           child: Text(
             context.l10n.retry,
-            style: const TextStyle(color: Colors.deepPurpleAccent, fontSize: 13, fontWeight: FontWeight.w500),
+            style: const TextStyle(color: Prysm.interest, fontSize: 13, fontWeight: FontWeight.w500),
           ),
         ),
       );
@@ -200,7 +201,7 @@ class WalListItem extends StatelessWidget {
                               child: LinearProgressIndicator(
                                 value: _calcProgress(wal),
                                 backgroundColor: const Color(0xFF3C3C43),
-                                color: Colors.deepPurpleAccent,
+                                color: Prysm.interest,
                                 minHeight: 3,
                               ),
                             ),
@@ -464,7 +465,7 @@ class _SyncPageState extends State<SyncPage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
-            _buildFaIcon(FontAwesomeIcons.sdCard, size: 20, color: Colors.deepPurpleAccent),
+            _buildFaIcon(FontAwesomeIcons.sdCard, size: 20, color: Prysm.interest),
             const SizedBox(width: 12),
             Text(context.l10n.sdCardProcessing, style: const TextStyle(color: Colors.white, fontSize: 18)),
           ],
@@ -485,7 +486,7 @@ class _SyncPageState extends State<SyncPage> {
             },
             child: Text(
               context.l10n.process,
-              style: const TextStyle(color: Colors.deepPurpleAccent, fontWeight: FontWeight.w600),
+              style: const TextStyle(color: Prysm.interest, fontWeight: FontWeight.w600),
             ),
           ),
         ],
@@ -550,7 +551,7 @@ class _SyncPageState extends State<SyncPage> {
       subtitle = l.syncProcessingBackgroundHint;
     } else if (readyToSync > 0) {
       title = l.syncCardReadyCount(readyToSync);
-      action = statusActionPill(l.sync, Colors.deepPurpleAccent, () {
+      action = statusActionPill(l.sync, Prysm.interest, () {
         if (context.read<ConnectivityProvider>().isConnected) {
           _handleSyncWals(context, syncProvider);
         } else {
@@ -580,7 +581,7 @@ class _SyncPageState extends State<SyncPage> {
               height: 16,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation(Colors.deepPurpleAccent),
+                valueColor: AlwaysStoppedAnimation(Prysm.interest),
               ),
             ),
             const SizedBox(width: 12),
@@ -740,7 +741,7 @@ class _SyncPageState extends State<SyncPage> {
 
     if (phoneWals.isNotEmpty) addSection(context.l10n.phone, FontAwesomeIcons.mobileScreen, Colors.grey, phoneWals);
     if (sdCardWals.isNotEmpty) {
-      addSection(context.l10n.sdCard, FontAwesomeIcons.sdCard, Colors.deepPurpleAccent, sdCardWals);
+      addSection(context.l10n.sdCard, FontAwesomeIcons.sdCard, Prysm.interest, sdCardWals);
     }
     if (limitlessWals.isNotEmpty) {
       addSection(context.l10n.limitless, FontAwesomeIcons.bolt, Colors.teal, limitlessWals);

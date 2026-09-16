@@ -1,3 +1,4 @@
+import 'package:omi/utils/prysm.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -21,7 +22,7 @@ class ExpandableTextWidget extends StatefulWidget {
     this.maxLines = 3,
     this.expandText,
     this.collapseText,
-    this.linkColor = Colors.deepPurple,
+    this.linkColor = Prysm.interest,
     required this.isExpanded,
     required this.toggleExpand,
   });
@@ -84,7 +85,7 @@ class _ExpandableTextWidgetState extends State<ExpandableTextWidget> {
                 child: Text(
                   widget.isExpanded ? collapseLabel : expandLabel,
                   style: TextStyle(
-                    color: Colors.deepPurple,
+                    color: Prysm.interest,
                     fontWeight: FontWeight.w500,
                     fontSize: widget.style.fontSize,
                   ),

@@ -1,3 +1,4 @@
+import 'package:omi/utils/prysm.dart';
 import 'package:omi/utils/platform/platform_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -215,7 +216,7 @@ class _ActionItemsPageState extends State<ActionItemsPage> with AutomaticKeepAli
               HapticFeedback.lightImpact();
               _showCreateActionItemSheet(defaultDueDate: _getDefaultDueDateForCategory(TaskCategory.today));
             },
-            backgroundColor: Colors.deepPurple,
+            backgroundColor: Prysm.interest,
             child: const Icon(Icons.add, color: Colors.white),
           ),
         );
@@ -530,7 +531,7 @@ class _ActionItemsPageState extends State<ActionItemsPage> with AutomaticKeepAli
                     HapticFeedback.mediumImpact();
                     return provider.forceRefreshActionItems();
                   },
-                  color: Colors.deepPurple,
+                  color: Prysm.interest,
                   backgroundColor: Colors.white,
                   child: provider.isLoading && provider.actionItems.isEmpty
                       ? _buildLoadingState()
@@ -596,7 +597,7 @@ class _ActionItemsPageState extends State<ActionItemsPage> with AutomaticKeepAli
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
-                    colors: [Colors.deepPurple.withValues(alpha: 0.35), Colors.deepPurple.withValues(alpha: 0.0)],
+                    colors: [Prysm.interest.withValues(alpha: 0.35), Prysm.interest.withValues(alpha: 0.0)],
                     stops: const [0.0, 1.0],
                   ),
                 ),
@@ -614,7 +615,7 @@ class _ActionItemsPageState extends State<ActionItemsPage> with AutomaticKeepAli
                   border: Border.all(color: Colors.white.withValues(alpha: 0.08), width: 1),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.deepPurple.withValues(alpha: 0.45),
+                      color: Prysm.interest.withValues(alpha: 0.45),
                       blurRadius: 30,
                       spreadRadius: 2,
                       offset: const Offset(0, 12),
@@ -1016,7 +1017,7 @@ class _ActionItemsPageState extends State<ActionItemsPage> with AutomaticKeepAli
           height: showIndicator ? 6 : (isDragging ? 20 : 4),
           margin: const EdgeInsets.symmetric(horizontal: 4),
           decoration: BoxDecoration(
-            color: showIndicator ? Colors.deepPurple : Colors.transparent,
+            color: showIndicator ? Prysm.interest : Colors.transparent,
             borderRadius: BorderRadius.circular(2),
           ),
         );
@@ -1134,7 +1135,7 @@ class _ActionItemsPageState extends State<ActionItemsPage> with AutomaticKeepAli
               Container(
                 height: 2,
                 margin: EdgeInsets.only(left: barLeft, right: 4),
-                decoration: BoxDecoration(color: Colors.deepPurple, borderRadius: BorderRadius.circular(1)),
+                decoration: BoxDecoration(color: Prysm.interest, borderRadius: BorderRadius.circular(1)),
               ),
             _buildDraggableTaskItem(item, provider, indentLevel, indentWidth, categoryItems),
             // Drop indicator below
@@ -1142,7 +1143,7 @@ class _ActionItemsPageState extends State<ActionItemsPage> with AutomaticKeepAli
               Container(
                 height: 2,
                 margin: EdgeInsets.only(left: barLeft, right: 4),
-                decoration: BoxDecoration(color: Colors.deepPurple, borderRadius: BorderRadius.circular(1)),
+                decoration: BoxDecoration(color: Prysm.interest, borderRadius: BorderRadius.circular(1)),
               ),
           ],
         );
@@ -1363,7 +1364,7 @@ class _ActionItemsPageState extends State<ActionItemsPage> with AutomaticKeepAli
         duration: const Duration(milliseconds: 150),
         margin: EdgeInsets.zero,
         decoration: BoxDecoration(
-          color: isSelected ? Colors.deepPurple.withValues(alpha: 0.15) : Colors.transparent,
+          color: isSelected ? Prysm.interest.withValues(alpha: 0.15) : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Padding(
@@ -1473,8 +1474,8 @@ class _ActionItemsPageState extends State<ActionItemsPage> with AutomaticKeepAli
       height: 22,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: isSelected ? Colors.deepPurple : Colors.grey[600]!, width: 2),
-        color: isSelected ? Colors.deepPurple : Colors.transparent,
+        border: Border.all(color: isSelected ? Prysm.interest : Colors.grey[600]!, width: 2),
+        color: isSelected ? Prysm.interest : Colors.transparent,
       ),
       child: isSelected ? const Icon(Icons.check, size: 14, color: Colors.white) : null,
     );

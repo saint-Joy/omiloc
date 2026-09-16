@@ -1,3 +1,4 @@
+import 'package:omi/utils/prysm.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -69,7 +70,7 @@ class _PrivateCloudSyncPageState extends State<PrivateCloudSyncPage> {
             onPressed: () => Navigator.of(context).pop(true),
             child: Text(
               context.l10n.enable,
-              style: const TextStyle(color: Colors.deepPurpleAccent, fontWeight: FontWeight.w600),
+              style: const TextStyle(color: Prysm.interest, fontWeight: FontWeight.w600),
             ),
           ),
         ],
@@ -124,7 +125,7 @@ class _PrivateCloudSyncPageState extends State<PrivateCloudSyncPage> {
                           children: [
                             Row(
                               children: [
-                                _buildFaIcon(FontAwesomeIcons.cloud, size: 20, color: Colors.deepPurpleAccent),
+                                _buildFaIcon(FontAwesomeIcons.cloud, size: 20, color: Prysm.interest),
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Text(
@@ -177,7 +178,7 @@ class _PrivateCloudSyncPageState extends State<PrivateCloudSyncPage> {
                                   child: CupertinoSwitch(
                                     value: isEnabled,
                                     onChanged: _isSaving ? null : _togglePrivateCloudSync,
-                                    activeTrackColor: Colors.deepPurpleAccent,
+                                    activeTrackColor: Prysm.interest,
                                   ),
                                 ),
                               ],

@@ -1,3 +1,4 @@
+import 'package:omi/utils/prysm.dart';
 import 'package:omi/utils/platform/platform_manager.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -41,10 +42,10 @@ class _DataPrivacyPageState extends State<DataPrivacyPage> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: Colors.deepPurple.withValues(alpha: 0.15),
+              color: Prysm.interest.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(Icons.lock_outline, color: Colors.deepPurple.shade200, size: 20),
+            child: const Icon(Icons.lock_outline, color: Prysm.interest, size: 20),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -55,10 +56,10 @@ class _DataPrivacyPageState extends State<DataPrivacyPage> {
                   TextSpan(text: '${context.l10n.dataEncryptedBanner} '),
                   TextSpan(
                     text: context.l10n.learnMore,
-                    style: TextStyle(
-                      color: Colors.deepPurple.shade200,
+                    style: const TextStyle(
+                      color: Prysm.interest,
                       decoration: TextDecoration.underline,
-                      decorationColor: Colors.deepPurple.shade200,
+                      decorationColor: Prysm.interest,
                     ),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () async {

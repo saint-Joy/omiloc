@@ -1,3 +1,4 @@
+import 'package:omi/utils/prysm.dart';
 import 'package:omi/utils/platform/platform_manager.dart';
 import 'package:flutter/material.dart';
 
@@ -73,7 +74,7 @@ class _ReferralPageState extends State<ReferralPage> {
         children: [
           if (_controller != null) WebViewWidget(controller: _controller!),
           if (_isLoading || _controller == null)
-            const Center(child: CircularProgressIndicator(color: Colors.deepPurple)),
+            const Center(child: CircularProgressIndicator(color: Prysm.interest)),
         ],
       ),
     );

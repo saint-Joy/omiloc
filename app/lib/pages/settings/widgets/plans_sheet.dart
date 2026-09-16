@@ -1,3 +1,4 @@
+import 'package:omi/utils/prysm.dart';
 import 'package:omi/utils/platform/platform_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -397,7 +398,7 @@ class _PlansSheetState extends State<PlansSheet> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           title: Row(
             children: [
-              const Icon(Icons.payment, color: Colors.deepPurple, size: 24),
+              const Icon(Icons.payment, color: Prysm.interest, size: 24),
               const SizedBox(width: 8),
               Text(
                 context.l10n.upgradeToAnnualPlan,
@@ -423,18 +424,18 @@ class _PlansSheetState extends State<PlansSheet> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.deepPurple.withValues(alpha: 0.1),
+                  color: Prysm.interest.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.deepPurple.withValues(alpha: 0.3)),
+                  border: Border.all(color: Prysm.interest.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.info_outline, color: Colors.deepPurple, size: 20),
+                    const Icon(Icons.info_outline, color: Prysm.interest, size: 20),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         context.l10n.thirteenMonthsCoverage,
-                        style: TextStyle(color: Colors.deepPurple.shade300, fontSize: 14, fontWeight: FontWeight.w500),
+                        style: const TextStyle(color: Prysm.interest, fontSize: 14, fontWeight: FontWeight.w500),
                       ),
                     ),
                   ],
@@ -450,7 +451,7 @@ class _PlansSheetState extends State<PlansSheet> {
             ElevatedButton(
               onPressed: () => Navigator.of(ctx).pop(true),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepPurple,
+                backgroundColor: Prysm.interest,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
@@ -636,8 +637,8 @@ class _PlansSheetState extends State<PlansSheet> {
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                   colors: [
-                    Colors.deepPurple.withValues(alpha: 0.5),
-                    Colors.deepPurple.withValues(alpha: 0.3),
+                    Prysm.interest.withValues(alpha: 0.5),
+                    Prysm.interest.withValues(alpha: 0.3),
                     Colors.black.withValues(alpha: 0.8),
                     Colors.black,
                   ],
@@ -980,7 +981,7 @@ class _PlansSheetState extends State<PlansSheet> {
                                 return Text(
                                   context.l10n.annualPlanStartsAutomatically,
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(color: Colors.deepPurple.shade400, fontSize: 14),
+                                  style: const TextStyle(color: Prysm.interest, fontSize: 14),
                                 );
                               } else {
                                 return Text(
@@ -1057,18 +1058,18 @@ class _PlansSheetState extends State<PlansSheet> {
                                 return Container(
                                   padding: const EdgeInsets.all(20),
                                   decoration: BoxDecoration(
-                                    color: Colors.deepPurple.withValues(alpha: 0.1),
+                                    color: Prysm.interest.withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(color: Colors.deepPurple.withValues(alpha: 0.3)),
+                                    border: Border.all(color: Prysm.interest.withValues(alpha: 0.3)),
                                   ),
                                   child: Column(
                                     children: [
-                                      const Icon(Icons.schedule, color: Colors.deepPurple, size: 32),
+                                      const Icon(Icons.schedule, color: Prysm.interest, size: 32),
                                       const SizedBox(height: 8),
                                       Text(
                                         context.l10n.upgradeScheduled,
-                                        style: TextStyle(
-                                          color: Colors.deepPurple.shade300,
+                                        style: const TextStyle(
+                                          color: Prysm.interest,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600,
                                         ),
@@ -1077,7 +1078,7 @@ class _PlansSheetState extends State<PlansSheet> {
                                       Text(
                                         context.l10n.annualPlanStartsAutomatically,
                                         textAlign: TextAlign.center,
-                                        style: TextStyle(color: Colors.deepPurple.shade400, fontSize: 14),
+                                        style: const TextStyle(color: Prysm.interest, fontSize: 14),
                                       ),
                                     ],
                                   ),
@@ -1494,7 +1495,7 @@ class _PlansSheetState extends State<PlansSheet> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Colors.deepPurple),
+                borderSide: const BorderSide(color: Prysm.interest),
               ),
               errorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),

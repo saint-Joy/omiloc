@@ -1,3 +1,4 @@
+import 'package:omi/utils/prysm.dart';
 import 'dart:io';
 
 import 'package:omi/utils/platform/platform_manager.dart';
@@ -304,12 +305,12 @@ class _ShareToContactsBottomSheetState extends State<ShareToContactsBottomSheet>
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: Colors.deepPurple.withValues(alpha: 0.3),
+                          color: Prysm.interest.withValues(alpha: 0.3),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
                           context.l10n.contactsSelectedCount(_selectedContacts.length),
-                          style: const TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.w600),
+                          style: const TextStyle(color: Prysm.interest, fontWeight: FontWeight.w600),
                         ),
                       ),
                       const Spacer(),
@@ -359,7 +360,7 @@ class _ShareToContactsBottomSheetState extends State<ShareToContactsBottomSheet>
                       child: ElevatedButton(
                         onPressed: _selectedContacts.isEmpty || _isPreparingShare ? null : _openNativeSms,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.deepPurple,
+                          backgroundColor: Prysm.interest,
                           disabledBackgroundColor: Colors.grey.shade800,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -394,7 +395,7 @@ class _ShareToContactsBottomSheetState extends State<ShareToContactsBottomSheet>
 
   Widget _buildContactsList(ScrollController scrollController) {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: Colors.deepPurple));
+      return const Center(child: CircularProgressIndicator(color: Prysm.interest));
     }
 
     if (_permissionDenied) {
@@ -424,7 +425,7 @@ class _ShareToContactsBottomSheetState extends State<ShareToContactsBottomSheet>
                   await launchUrl(Uri.parse('package:com.friend.ios'));
                 }
               },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.deepPurple),
+              style: ElevatedButton.styleFrom(backgroundColor: Prysm.interest),
               child: Text(context.l10n.openSettings),
             ),
           ],
@@ -465,7 +466,7 @@ class _ShareToContactsBottomSheetState extends State<ShareToContactsBottomSheet>
     return ListTile(
       onTap: () => _toggleContactSelection(contact),
       leading: CircleAvatar(
-        backgroundColor: contact.isSelected ? Colors.deepPurple : Colors.grey.shade800,
+        backgroundColor: contact.isSelected ? Prysm.interest : Colors.grey.shade800,
         child: contact.isSelected
             ? const Icon(Icons.check, color: Colors.white, size: 20)
             : Text(
@@ -479,7 +480,7 @@ class _ShareToContactsBottomSheetState extends State<ShareToContactsBottomSheet>
       ),
       subtitle: Text(contact.phoneNumber, style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
       trailing: contact.isSelected
-          ? const Icon(Icons.check_circle, color: Colors.deepPurple)
+          ? const Icon(Icons.check_circle, color: Prysm.interest)
           : Icon(Icons.circle_outlined, color: Colors.grey.shade600),
     );
   }

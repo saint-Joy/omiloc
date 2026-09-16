@@ -1,3 +1,4 @@
+import 'package:omi/utils/prysm.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -1004,7 +1005,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                         margin: const EdgeInsets.only(right: 8),
                         decoration: BoxDecoration(
                           color: isSyncing
-                              ? Colors.deepPurple.withValues(alpha: 0.2)
+                              ? Prysm.interest.withValues(alpha: 0.2)
                               : hasPendingOnDevice
                                   ? Colors.orange.withValues(alpha: 0.15)
                                   : const Color(0xFF1F1F25),
@@ -1014,7 +1015,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                           Icons.cloud_rounded,
                           size: 18,
                           color: isSyncing
-                              ? Colors.deepPurpleAccent
+                              ? Prysm.interest
                               : hasPendingOnDevice
                                   ? Colors.orangeAccent
                                   : Colors.white70,
@@ -1044,7 +1045,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                           height: 36,
                           decoration: BoxDecoration(
                             color: homeProvider.showConvoSearchBar
-                                ? Colors.deepPurple.withValues(alpha: 0.5)
+                                ? Prysm.interest.withValues(alpha: 0.5)
                                 : const Color(0xFF1F1F25),
                             shape: BoxShape.circle,
                           ),
@@ -1064,7 +1065,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                           width: 36,
                           height: 36,
                           decoration: BoxDecoration(
-                            color: Colors.deepPurple.withValues(alpha: 0.5),
+                            color: Prysm.interest.withValues(alpha: 0.5),
                             shape: BoxShape.circle,
                           ),
                           child: IconButton(
@@ -1114,7 +1115,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver, Ticker
                         width: 36,
                         height: 36,
                         decoration: BoxDecoration(
-                          color: showCompleted ? Colors.deepPurple.withValues(alpha: 0.5) : const Color(0xFF1F1F25),
+                          color: showCompleted ? Prysm.interest.withValues(alpha: 0.5) : const Color(0xFF1F1F25),
                           shape: BoxShape.circle,
                         ),
                         child: IconButton(

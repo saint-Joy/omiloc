@@ -1,3 +1,4 @@
+import 'package:omi/utils/prysm.dart';
 import 'dart:ui';
 
 import 'package:omi/utils/platform/platform_manager.dart';
@@ -929,10 +930,10 @@ class _ActionItemTileWidgetState extends State<ActionItemTileWidget> {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: widget.isSelected ? Colors.deepPurpleAccent : Colors.grey.shade600,
+                            color: widget.isSelected ? Prysm.interest : Colors.grey.shade600,
                             width: 2,
                           ),
-                          color: widget.isSelected ? Colors.deepPurpleAccent : Colors.transparent,
+                          color: widget.isSelected ? Prysm.interest : Colors.transparent,
                         ),
                         child: widget.isSelected ? const Icon(Icons.check, color: Colors.white, size: 16) : null,
                       ),
@@ -950,12 +951,12 @@ class _ActionItemTileWidgetState extends State<ActionItemTileWidget> {
                             shape: BoxShape.circle,
                             border: Border.all(
                               color: (widget.actionItem.completed || _isAnimating)
-                                  ? Colors.deepPurpleAccent
+                                  ? Prysm.interest
                                   : Colors.grey.shade600,
                               width: 2,
                             ),
                             color: (widget.actionItem.completed || _isAnimating)
-                                ? Colors.deepPurpleAccent
+                                ? Prysm.interest
                                 : Colors.transparent,
                           ),
                           child: (widget.actionItem.completed || _isAnimating)

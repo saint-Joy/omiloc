@@ -1,3 +1,4 @@
+import 'package:omi/utils/prysm.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -153,7 +154,7 @@ class _PhoneSetupVerifyPageState extends State<PhoneSetupVerifyPage> with Single
                   child: Container(
                     width: double.infinity,
                     height: 56,
-                    decoration: BoxDecoration(color: Colors.deepPurple, borderRadius: BorderRadius.circular(28)),
+                    decoration: BoxDecoration(color: Prysm.interest, borderRadius: BorderRadius.circular(28)),
                     alignment: Alignment.center,
                     child: Text(
                       context.l10n.phoneTryAgain,

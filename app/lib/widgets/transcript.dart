@@ -1,3 +1,4 @@
+import 'package:omi/utils/prysm.dart';
 import 'dart:convert';
 import 'dart:math';
 
@@ -665,7 +666,7 @@ class _TranscriptWidgetState extends State<TranscriptWidget> {
           child: Container(
             key: matchKey,
             decoration: BoxDecoration(
-              color: isCurrentResult ? Colors.orange.withValues(alpha: 0.9) : Colors.deepPurple.withValues(alpha: 0.6),
+              color: isCurrentResult ? Colors.orange.withValues(alpha: 0.9) : Prysm.interest.withValues(alpha: 0.6),
               borderRadius: BorderRadius.circular(2),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 1),

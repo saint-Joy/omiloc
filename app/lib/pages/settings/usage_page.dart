@@ -1,3 +1,4 @@
+import 'package:omi/utils/prysm.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui' as ui;
@@ -314,7 +315,7 @@ class _UsagePageState extends State<UsagePage> with TickerProviderStateMixin {
         ],
         bottom: TabBar(
           controller: _tabController,
-          indicatorColor: Colors.deepPurple,
+          indicatorColor: Prysm.interest,
           isScrollable: true,
           indicatorWeight: 3,
           labelStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -339,7 +340,7 @@ class _UsagePageState extends State<UsagePage> with TickerProviderStateMixin {
               children: [
                 _buildFairUseBanner(),
                 const Expanded(
-                  child: Center(child: CircularProgressIndicator(color: Colors.deepPurple)),
+                  child: Center(child: CircularProgressIndicator(color: Prysm.interest)),
                 ),
               ],
             );
@@ -611,7 +612,7 @@ class _UsagePageState extends State<UsagePage> with TickerProviderStateMixin {
     }
 
     if (stats == null) {
-      return const Center(child: CircularProgressIndicator(color: Colors.deepPurple));
+      return const Center(child: CircularProgressIndicator(color: Prysm.interest));
     }
 
     if (stats.transcriptionSeconds == 0 &&
@@ -620,7 +621,7 @@ class _UsagePageState extends State<UsagePage> with TickerProviderStateMixin {
         stats.memoriesCreated == 0) {
       return RefreshIndicator(
         onRefresh: onRefresh,
-        color: Colors.deepPurple,
+        color: Prysm.interest,
         child: RepaintBoundary(
           key: key,
           child: Container(
@@ -643,7 +644,7 @@ class _UsagePageState extends State<UsagePage> with TickerProviderStateMixin {
 
     return RefreshIndicator(
       onRefresh: onRefresh,
-      color: Colors.deepPurple,
+      color: Prysm.interest,
       child: RepaintBoundary(
         key: key,
         child: Container(

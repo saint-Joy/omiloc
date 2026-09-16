@@ -1,3 +1,4 @@
+import 'package:omi/utils/prysm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -147,11 +148,11 @@ class _AcceptSharedTasksSheetState extends State<AcceptSharedTasksSheet> {
               child: ElevatedButton(
                 onPressed: _isAccepting ? null : _acceptTasks,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurple,
+                  backgroundColor: Prysm.interest,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  disabledBackgroundColor: Colors.deepPurple.withValues(alpha: 0.5),
+                  disabledBackgroundColor: Prysm.interest.withValues(alpha: 0.5),
                 ),
                 child: _isAccepting
                     ? const SizedBox(

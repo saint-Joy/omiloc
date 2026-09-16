@@ -455,13 +455,14 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             supportedLocales: AppLocalizations.supportedLocales,
             theme: ThemeData(
               useMaterial3: false,
+              scaffoldBackgroundColor: Colors.black,
               colorScheme: const ColorScheme.dark(
                 primary: Colors.black,
-                secondary: Color(0xFF35343B),
-                surface: Colors.black38,
+                secondary: Color(0xFF101010),
+                surface: Colors.black,
               ),
               snackBarTheme: const SnackBarThemeData(
-                backgroundColor: Color(0xFF1F1F25),
+                backgroundColor: Color(0xFF101010),
                 contentTextStyle: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w500),
               ),
               textTheme: TextTheme(

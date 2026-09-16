@@ -1,3 +1,4 @@
+import 'package:omi/utils/prysm.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -105,7 +106,7 @@ class SpeakerFilterSheet extends StatelessWidget {
       key: key,
       leading: Icon(icon),
       title: Text(name),
-      trailing: selected ? const Icon(Icons.check, color: Colors.deepPurpleAccent) : null,
+      trailing: selected ? const Icon(Icons.check, color: Prysm.interest) : null,
       onTap: () async {
         await onSelected(speakerId);
       },

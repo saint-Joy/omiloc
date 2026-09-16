@@ -1,3 +1,4 @@
+import 'package:omi/utils/prysm.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -335,7 +336,7 @@ class _ImportHistoryPageState extends State<ImportHistoryPage> {
         decoration: BoxDecoration(
           color: const Color(0xFF1F1F25),
           borderRadius: BorderRadius.circular(12),
-          border: isAvailable ? Border.all(color: Colors.deepPurple.withValues(alpha: 0.3), width: 1) : null,
+          border: isAvailable ? Border.all(color: Prysm.interest.withValues(alpha: 0.3), width: 1) : null,
         ),
         child: Row(
           children: [
@@ -402,13 +403,13 @@ class _ImportHistoryPageState extends State<ImportHistoryPage> {
                   ? const SizedBox(
                       width: 20,
                       height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.deepPurple),
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Prysm.interest),
                     )
                   : Container(
                       width: 30,
                       height: 30,
                       decoration: BoxDecoration(
-                        color: Colors.deepPurple.withValues(alpha: 0.8),
+                        color: Prysm.interest.withValues(alpha: 0.8),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const FaIcon(FontAwesomeIcons.plus, color: Colors.white, size: 16),

@@ -1,3 +1,4 @@
+import 'package:omi/utils/prysm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl_country_data/intl_country_data.dart';
@@ -196,7 +197,7 @@ class _PhoneSetupNumberPageState extends State<PhoneSetupNumberPage> {
                   width: double.infinity,
                   height: 56,
                   decoration: BoxDecoration(
-                    color: (_isValid && !_isLoading) ? Colors.deepPurple : Colors.grey[800],
+                    color: (_isValid && !_isLoading) ? Prysm.interest : Colors.grey[800],
                     borderRadius: BorderRadius.circular(28),
                   ),
                   alignment: Alignment.center,

@@ -1,3 +1,4 @@
+import 'package:omi/utils/prysm.dart';
 import 'dart:async';
 
 import 'package:omi/utils/platform/platform_manager.dart';
@@ -892,7 +893,7 @@ class _ConversationDetailPageState extends State<ConversationDetailPage> with Ti
                             margin: const EdgeInsets.only(right: 8),
                             decoration: BoxDecoration(
                               color: _isSearching
-                                  ? Colors.deepPurple.withValues(alpha: 0.8)
+                                  ? Prysm.interest.withValues(alpha: 0.8)
                                   : Colors.grey.withValues(alpha: 0.3),
                               shape: BoxShape.circle,
                             ),
@@ -1582,7 +1583,7 @@ class _CalendarEventPickerSheetState extends State<CalendarEventPickerSheet> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
-                        color: Colors.deepPurple.withValues(alpha: 0.4),
+                        color: Prysm.interest.withValues(alpha: 0.4),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: const Text(

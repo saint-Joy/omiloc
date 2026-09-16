@@ -1,3 +1,4 @@
+import 'package:omi/utils/prysm.dart';
 import 'package:omi/utils/platform/platform_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -165,7 +166,7 @@ class MemoriesPageState extends State<MemoriesPage> with AutomaticKeepAliveClien
                     HapticFeedback.mediumImpact();
                     await provider.init();
                   },
-                  color: Colors.deepPurpleAccent,
+                  color: Prysm.interest,
                   backgroundColor: Colors.white,
                   child: provider.loading && _isInitialLoad
                       ? CustomScrollView(
@@ -399,7 +400,7 @@ class MemoriesPageState extends State<MemoriesPage> with AutomaticKeepAliveClien
                       showMemoryDialog(context, provider);
                       PlatformManager.instance.analytics.memoriesPageCreateMemoryBtn();
                     },
-                    backgroundColor: Colors.deepPurple,
+                    backgroundColor: Prysm.interest,
                     tooltip: context.l10n.createMemoryTooltip,
                     child: const Icon(Icons.add, color: Colors.white),
                   ),

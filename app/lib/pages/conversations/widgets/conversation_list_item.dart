@@ -1,3 +1,4 @@
+import 'package:omi/utils/prysm.dart';
 import 'dart:async';
 import 'package:omi/utils/platform/platform_manager.dart';
 import 'package:flutter/cupertino.dart';
@@ -213,13 +214,13 @@ class _ConversationListItemState extends State<ConversationListItem> {
                       width: double.maxFinite,
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? Colors.deepPurple.withValues(alpha: 0.3)
+                            ? Prysm.interest.withValues(alpha: 0.3)
                             : (isSelectionMode && !isEligible)
                                 ? Colors.grey.shade800
                                 : const Color(0xFF1F1F25),
                         borderRadius: BorderRadius.circular(24.0),
                         border: isSelected
-                            ? Border.all(color: Colors.deepPurple, width: 2)
+                            ? Border.all(color: Prysm.interest, width: 2)
                             : (isSelectionMode && !isEligible)
                                 ? Border.all(color: Colors.grey.shade600, width: 1)
                                 : null,
@@ -263,7 +264,7 @@ class _ConversationListItemState extends State<ConversationListItem> {
                                               child: Checkbox(
                                                 value: dontShow,
                                                 onChanged: (v) => setState(() => dontShow = v ?? false),
-                                                activeColor: Colors.deepPurple,
+                                                activeColor: Prysm.interest,
                                                 checkColor: Colors.white,
                                                 side: const BorderSide(color: Colors.white54),
                                                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,

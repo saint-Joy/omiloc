@@ -1,3 +1,4 @@
+import 'package:omi/utils/prysm.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -88,7 +89,7 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
       body: Stack(
         children: [
           WebViewWidget(controller: _controller!),
-          if (_isLoading) const Center(child: CircularProgressIndicator(color: Colors.deepPurple)),
+          if (_isLoading) const Center(child: CircularProgressIndicator(color: Prysm.interest)),
         ],
       ),
     );

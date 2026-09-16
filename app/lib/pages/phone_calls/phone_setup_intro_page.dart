@@ -1,3 +1,4 @@
+import 'package:omi/utils/prysm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -73,7 +74,7 @@ class PhoneSetupIntroPage extends StatelessWidget {
                 child: Container(
                   width: double.infinity,
                   height: 56,
-                  decoration: BoxDecoration(color: Colors.deepPurple, borderRadius: BorderRadius.circular(28)),
+                  decoration: BoxDecoration(color: Prysm.interest, borderRadius: BorderRadius.circular(28)),
                   alignment: Alignment.center,
                   child: Text(
                     context.l10n.phoneGetStarted,

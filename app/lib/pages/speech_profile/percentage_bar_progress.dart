@@ -1,3 +1,4 @@
+import 'package:omi/utils/prysm.dart';
 import 'package:flutter/material.dart';
 
 class ProgressBarWithPercentage extends StatefulWidget {
@@ -46,7 +47,7 @@ class _ProgressBarWithPercentageState extends State<ProgressBarWithPercentage> {
                   child: LinearProgressIndicator(
                     value: progress,
                     backgroundColor: Colors.grey.shade300,
-                    valueColor: const AlwaysStoppedAnimation<Color>(Colors.deepPurple),
+                    valueColor: const AlwaysStoppedAnimation<Color>(Prysm.interest),
                   ),
                 ),
               ),

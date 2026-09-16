@@ -1,3 +1,4 @@
+import 'package:omi/utils/prysm.dart';
 import 'package:omi/utils/platform/platform_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -289,7 +290,7 @@ class _HomeRecordButtonState extends State<HomeRecordButton> {
             height: 62,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: isRecording ? Colors.red.shade700 : Colors.deepPurple,
+              color: isRecording ? Colors.red.shade700 : Prysm.interest,
               shape: BoxShape.circle,
             ),
             child: isRecording
@@ -419,7 +420,7 @@ class _RecordOption extends StatelessWidget {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.deepPurple.withValues(alpha: 0.35),
+                    color: Prysm.interest.withValues(alpha: 0.35),
                     blurRadius: 14,
                     offset: const Offset(0, 4),
                   ),
